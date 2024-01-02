@@ -8,7 +8,7 @@ const dbConnect = require("./database/index");
 const ErrorHandler = require("./middlewares/errorHandler");
 const { PORT } = require("./config/index");
 app.use(express.json({ limit: "50mb" }));
-
+ 
 const userRouter = require("./routes/user");
 const vendorRouter = require("./routes/vendor");
 
