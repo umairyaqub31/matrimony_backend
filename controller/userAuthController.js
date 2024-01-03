@@ -14,7 +14,7 @@ const userAuthController = {
     const userRegisterSchema = Joi.object({
       fullName: Joi.string().required(),
       email: Joi.string().required(),
-      phoneNo: Joi.string(),
+      phoneNo: Joi.string().required(),
       password: Joi.string().pattern(passwordPattern).required(),
     });
 
@@ -136,46 +136,46 @@ const userAuthController = {
       .json({ user: user, auth: true, token: accessToken });
   },
 
-  async updateProfile(req, res, next) {
-    const docSchema = Joi.object({
-      userName: Joi.string(),
-      email: Joi.string(),
-      role: Joi.string(),
-      savedRehab: Joi.string(),
-      password: Joi.string().pattern(passwordPattern),
-    });
+//   async updateProfile(req, res, next) {
+//     const docSchema = Joi.object({
+//       userName: Joi.string(),
+//       email: Joi.string(),
+//       role: Joi.string(),
+//       savedRehab: Joi.string(),
+//       password: Joi.string().pattern(passwordPattern),
+//     });
 
-    const { error } = docSchema.validate(req.body);
+//     const { error } = docSchema.validate(req.body);
 
-    if (error) {
-      return next(error);
-    }
-    const { userName, email, role, savedRehab, password } = req.body;
-    const docId = req.user._id;
+//     if (error) {
+//       return next(error);
+//     }
+//     const { userName, email, role, savedRehab, password } = req.body;
+//     const docId = req.user._id;
 
-    const doc = await User.findById(docId);
+//     const doc = await User.findById(docId);
 
-    if (!doc) {
-      const error = new Error("User not found!");
-      error.status = 404;
-      return next(error);
-    }
+//     if (!doc) {
+//       const error = new Error("User not found!");
+//       error.status = 404;
+//       return next(error);
+//     }
 
-    // Update only the provided fields
-    if (userName) doc.userName = userName;
-    if (email) doc.email = email;
-    if (role) doc.role = role;
-    if (savedRehab) doc.savedRehab = savedRehab;
-    if (password) doc.password = password;
+//     // Update only the provided fields
+//     if (userName) doc.userName = userName;
+//     if (email) doc.email = email;
+//     if (role) doc.role = role;
+//     if (savedRehab) doc.savedRehab = savedRehab;
+//     if (password) doc.password = password;
 
-    // Save the updated test
-    await doc.save();
+//     // Save the updated test
+//     await doc.save();
 
-    return res
-      .status(200)
-      .json({ message: "User updated successfully", user: doc });
-  },
-
+//     return res
+//       .status(200)
+//       .json({ message: "User updated successfully", user: doc });
+//   },
+ 
   async logout(req, res, next) {
     const userId = req.user._id;
     const authHeader = req.headers["authorization"];

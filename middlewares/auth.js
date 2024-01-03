@@ -1,6 +1,6 @@
 const JWTService = require("../services/JWTService");
-const User = require("../models/User/user");
-const Vendor = require("../models/vendor/vendor");
+// const User = require("../models/User/user");
+// const Vendor = require("../models/vendor/vendor");
 const AccessToken = require("../models/accessToken");
 
 const auth = async (req, res, next) => {
