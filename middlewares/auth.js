@@ -1,5 +1,5 @@
 const JWTService = require("../services/JWTService");
-// const User = require("../models/User/user");
+const User = require("../models/user");
 // const Vendor = require("../models/vendor/vendor");
 const AccessToken = require("../models/accessToken");
 
@@ -46,18 +46,7 @@ const auth = async (req, res, next) => {
 
       next();
       return;
-     } else if (req.originalUrl.includes("/vendor")) {
-      try {
-        user = await Vendor.findOne({ _id: _id });
-      } catch (error) {
-        return next(error);
-      }
-
-      req.user = user;
-
-      next();
-      return;
-    }
+     } 
   } catch (error) {
     return next(error);
   }

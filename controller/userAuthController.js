@@ -36,7 +36,7 @@ const userAuthController = {
         fullName,
         email,
         phoneNo,
-        password: hashedPassword
+        password: hashedPassword,
       });
 
       user = await userToRegister.save();
@@ -66,29 +66,28 @@ const userAuthController = {
       password: Joi.string().pattern(passwordPattern),
     });
     const { error } = userLoginSchema.validate(req.body);
-    
+
     if (error) {
-        return next(error);
+      return next(error);
     }
-    
+
     const { email, password } = req.body;
-    
+
     let user;
-    
+
     try {
-        // match username
-        user = await User.findOne({ email: email });
-        console.log(user);
-        if (!user) {
-            const error = {
+      // match username
+      user = await User.findOne({ email: email });
+      console.log(user);
+      if (!user) {
+        const error = {
           status: 401,
           message: "Invalid email",
         };
-        
       }
-      
+
       // match password
-      
+
       const match = await bcrypt.compare(password, user.password);
       console.log("object");
 
@@ -131,51 +130,62 @@ const userAuthController = {
       return next(error);
     }
 
-    return res
-      .status(200)
-      .json({ user: user, auth: true, token: accessToken });
+    return res.status(200).json({ user: user, auth: true, token: accessToken });
   },
 
-//   async updateProfile(req, res, next) {
-//     const docSchema = Joi.object({
-//       userName: Joi.string(),
-//       email: Joi.string(),
-//       role: Joi.string(),
-//       savedRehab: Joi.string(),
-//       password: Joi.string().pattern(passwordPattern),
-//     });
+  async completeProfile(req, res, next) {
+    const userSchema = Joi.object({
+      gender: Joi.string(),
+      email: Joi.string(),
+      DOB: Joi.string(),
+      occupation: Joi.string(),
+      employedIn: Joi.string(),
+      annualIncome: Joi.string(),
+      workLocation: Joi.string(),
+      age: Joi.string(),
+      maritalStatus: Joi.string(),
+      height: Joi.string(),
+      education: Joi.string(),
+      partnerPreference: Joi.object({
+        age: Joi.number(),
+        maritalStatus: Joi.string(),
+        height: Joi.number(),
+        education: Joi.string(),
+        partnerOccupation: Joi.string(),
+        motherTongue: Joi.string(),
+        partnerAnnualIncome: Joi.number(),
+        sect: Joi.string(),
+        city: Joi.string(),
+      }),
+    });
+  
+    const { error } = userSchema.validate(req.body);
+  
+    if (error) {
+      return next(error);
+    }
+  
+    const userId = req.user._id;
+  
+    try {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $set: req.body },
+        { new: true }
+      );
+  
+      if (!user) {
+        const error = new Error("User not found!");
+        error.status = 404;
+        return next(error);
+      }
+  
+      return res.status(200).json({ message: "User updated successfully", user });
+    } catch (error) {
+      return next(error);
+    }
+  },
 
-//     const { error } = docSchema.validate(req.body);
-
-//     if (error) {
-//       return next(error);
-//     }
-//     const { userName, email, role, savedRehab, password } = req.body;
-//     const docId = req.user._id;
-
-//     const doc = await User.findById(docId);
-
-//     if (!doc) {
-//       const error = new Error("User not found!");
-//       error.status = 404;
-//       return next(error);
-//     }
-
-//     // Update only the provided fields
-//     if (userName) doc.userName = userName;
-//     if (email) doc.email = email;
-//     if (role) doc.role = role;
-//     if (savedRehab) doc.savedRehab = savedRehab;
-//     if (password) doc.password = password;
-
-//     // Save the updated test
-//     await doc.save();
-
-//     return res
-//       .status(200)
-//       .json({ message: "User updated successfully", user: doc });
-//   },
- 
   async logout(req, res, next) {
     const userId = req.user._id;
     const authHeader = req.headers["authorization"];
