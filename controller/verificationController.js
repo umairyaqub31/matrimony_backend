@@ -166,7 +166,7 @@ const verificationController = {
         service: "gmail",
         auth: {
           user: "umairyaqub31@gmail.com",
-          pass: "wwdrzfmlrfjprypp",
+          pass: "kajhaukzwygsfxau",
         },
       });
       var mailOptions = {
