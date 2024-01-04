@@ -16,7 +16,7 @@ router.post("/user/register", userAuthController.register);
 router.post("/user/login", userAuthController.login);
 // router.post("/user/uploadFile", upload.single("file"), uploadFileController.uploadFile);
 // router.post("/user/completeSignup", userAuthController.completeSignup);
-router.put("/user/completeProfile", auth, userAuthController.completeProfile);
+router.post("/user/completeProfile", auth, userAuthController.completeProfile);
 router.post("/user/logout", auth, userAuthController.logout);
 // router.post("/user/refresh", auth, ambulanceAuthController.refresh);
 
