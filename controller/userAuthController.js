@@ -134,53 +134,60 @@ const userAuthController = {
   },
 
   async completeProfile(req, res, next) {
-    const userSchema = Joi.object({
-      gender: Joi.string(),
-      email: Joi.string(),
-      DOB: Joi.string(),
-      occupation: Joi.string(),
-      employedIn: Joi.string(),
-      annualIncome: Joi.string(),
-      workLocation: Joi.string(),
-      age: Joi.string(),
-      maritalStatus: Joi.string(),
-      height: Joi.string(),
-      education: Joi.string(),
-      partnerPreference: Joi.object({
-        age: Joi.number(),
-        maritalStatus: Joi.string(),
-        height: Joi.number(),
-        education: Joi.string(),
-        partnerOccupation: Joi.string(),
-        motherTongue: Joi.string(),
-        partnerAnnualIncome: Joi.number(),
-        sect: Joi.string(),
-        city: Joi.string(),
-      }),
-    });
-  
-    const { error } = userSchema.validate(req.body);
-  
-    if (error) {
-      return next(error);
-    }
-  
-    const userId = req.user._id;
-  
     try {
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { $set: req.body },
-        { new: true }
-      );
-  
-      if (!user) {
-        const error = new Error("User not found!");
-        error.status = 404;
+      console.log("object");
+      const userSchema = Joi.object({
+        gender: Joi.string(),
+        email: Joi.string(),
+        DOB: Joi.string(),
+        occupation: Joi.string(),
+        employedIn: Joi.string(),
+        annualIncome: Joi.string(),
+        workLocation: Joi.string(),
+        age: Joi.string(),
+        maritalStatus: Joi.string(),
+        height: Joi.string(),
+        education: Joi.string(),
+        partnerPreference: Joi.object({
+          age: Joi.number(),
+          maritalStatus: Joi.string(),
+          height: Joi.number(),
+          education: Joi.string(),
+          partnerOccupation: Joi.string(),
+          motherTongue: Joi.string(),
+          partnerAnnualIncome: Joi.number(),
+          sect: Joi.string(),
+          city: Joi.string(),
+        }),
+      });
+
+      const { error } = userSchema.validate(req.body);
+
+      if (error) {
         return next(error);
       }
-  
-      return res.status(200).json({ message: "User updated successfully", user });
+
+      const userId = req.user._id;
+
+      try {
+        const user = await User.findByIdAndUpdate(
+          userId,
+          { $set: req.body },
+          { new: true }
+        );
+
+        if (!user) {
+          const error = new Error("User not found!");
+          error.status = 404;
+          return next(error);
+        }
+
+        return res
+          .status(200)
+          .json({ message: "User updated successfully", user });
+      } catch (error) {
+        return next(error);
+      }
     } catch (error) {
       return next(error);
     }
@@ -207,4 +214,3 @@ const userAuthController = {
 };
 
 module.exports = userAuthController;
- 
