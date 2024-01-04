@@ -25,6 +25,15 @@ const userAuthController = {
     }
 
     const { name, email, phone, password } = req.body;
+    const emailExists = await User.find({ email });
+    if (emailExists) {
+      const error = {
+        status: 401,
+        message: "Email Already Registered",
+      };
+
+      return next(error);
+    }
 
     let accessToken;
     let refreshToken;
