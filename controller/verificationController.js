@@ -157,7 +157,7 @@ const verificationController = {
       let code;
       var codeToSave = new VerificationCode({
         email: email,
-        code: Math.floor(100000 + Math.random() * 900000),
+        code: Math.floor(1000 + Math.random() * 9000),
       });
       code = codeToSave.save();
 
@@ -165,7 +165,7 @@ const verificationController = {
       var transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "berryboostbb",
+          user: "umairyaqub31@gmail.com",
           pass: "wwdrzfmlrfjprypp",
         },
       });
@@ -388,7 +388,7 @@ const verificationController = {
   //       resetLink = `${baseUrl}/traveltourism/hotel/forgot-password?token=${resetToken}`;
   //     } else if (userType == "Insurance") {
   //       resetLink = `${baseUrl}/donation/update-password?token=${resetToken}`;
-  //     } 
+  //     }
 
   //     var transporter = nodemailer.createTransport({
   //       service: "gmail",
