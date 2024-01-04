@@ -12,9 +12,9 @@ const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,25}$/;
 const userAuthController = {
   async register(req, res, next) {
     const userRegisterSchema = Joi.object({
-      fullName: Joi.string().required(),
+      name: Joi.string().required(),
       email: Joi.string().required(),
-      phoneNo: Joi.string().required(),
+      phone: Joi.string().required(),
       password: Joi.string().pattern(passwordPattern).required(),
     });
 
@@ -24,7 +24,7 @@ const userAuthController = {
       return next(error);
     }
 
-    const { fullName, email, phoneNo, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
     let accessToken;
     let refreshToken;
@@ -33,9 +33,9 @@ const userAuthController = {
     let user;
     try {
       const userToRegister = new User({
-        fullName,
+        name,
         email,
-        phoneNo,
+        phone,
         password: hashedPassword,
       });
 
@@ -138,7 +138,6 @@ const userAuthController = {
       console.log("object");
       const userSchema = Joi.object({
         gender: Joi.string(),
-        email: Joi.string(),
         DOB: Joi.string(),
         occupation: Joi.string(),
         employedIn: Joi.string(),
