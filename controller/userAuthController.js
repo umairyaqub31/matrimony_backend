@@ -7,7 +7,7 @@ const JWTService = require("../services/JWTService.js");
 const RefreshToken = require("../models/token.js");
 const AccessToken = require("../models/accessToken.js");
 
-const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,25}$/;
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
 
 const userAuthController = {
   async register(req, res, next) {
@@ -25,7 +25,8 @@ const userAuthController = {
     }
 
     const { name, email, phone, password } = req.body;
-    const emailExists = await User.find({ email });
+    const emailExists = await User.findOne({ email });
+    console.log(emailExists)
     if (emailExists) {
       const error = {
         status: 401,
