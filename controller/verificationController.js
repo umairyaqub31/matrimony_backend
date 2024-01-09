@@ -145,14 +145,14 @@ const verificationController = {
   async sendCodeToEmail(req, res, next) {
     let emailExists;
     const { email } = req.body;
-    if (req.originalUrl.includes("/user")) {
-      emailExists = await User.exists({ email });
-    }
-    if (!emailExists) {
-      const error = new Error("User not found!");
-      error.status = 400;
-      return next(error);
-    }
+    // if (req.originalUrl.includes("/user")) {
+    //   emailExists = await User.exists({ email });
+    // }
+    // if (!emailExists) {
+    //   const error = new Error("User not found!");
+    //   error.status = 400;
+    //   return next(error);
+    // }
     try {
       let code;
       var codeToSave = new VerificationCode({
