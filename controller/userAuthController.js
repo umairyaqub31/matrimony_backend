@@ -7,7 +7,8 @@ const JWTService = require("../services/JWTService.js");
 const RefreshToken = require("../models/token.js");
 const AccessToken = require("../models/accessToken.js");
 
-const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+const passwordPattern =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
 
 const userAuthController = {
   async register(req, res, next) {
@@ -26,7 +27,7 @@ const userAuthController = {
 
     const { name, email, phone, password } = req.body;
     const emailExists = await User.findOne({ email });
-    console.log(emailExists)
+    console.log(emailExists);
     if (emailExists) {
       const error = {
         status: 401,
@@ -145,28 +146,31 @@ const userAuthController = {
 
   async completeProfile(req, res, next) {
     try {
-      console.log("object");
       const userSchema = Joi.object({
-        gender: Joi.string(),
-        DOB: Joi.string(),
-        occupation: Joi.string(),
-        employedIn: Joi.string(),
-        annualIncome: Joi.string(),
-        workLocation: Joi.string(),
-        age: Joi.string(),
-        maritalStatus: Joi.string(),
-        height: Joi.string(),
-        education: Joi.string(),
+        gender: Joi.string().valid("male", "female").required(),
+        DOB: Joi.string().required(),
+        age: Joi.string().required(),
+        occupation: Joi.string().required(),
+        employedIn: Joi.string().required(),
+        annualIncome: Joi.string().required(),
+        workLocation: Joi.string().required(),
+        age: Joi.string().required().required(),
+        maritalStatus: Joi.string().required(),
+        height: Joi.string().required(),
+        motherTongue: Joi.string().required(),
+        sect: Joi.string().required(),
+        city: Joi.string().required(),
+        highestDegree: Joi.string().required(),
         partnerPreference: Joi.object({
-          age: Joi.number(),
-          maritalStatus: Joi.string(),
-          height: Joi.number(),
-          education: Joi.string(),
-          partnerOccupation: Joi.string(),
-          motherTongue: Joi.string(),
-          partnerAnnualIncome: Joi.number(),
-          sect: Joi.string(),
-          city: Joi.string(),
+          partnerAge: Joi.number().required(),
+          partnerMaritalStatus: Joi.string().required(),
+          partnerHeight: Joi.number().required(),
+          education: Joi.string().required(),
+          partnerOccupation: Joi.string().required(),
+          partnerMotherTongue: Joi.string().required(),
+          partnerAnnualIncome: Joi.number().required(),
+          partnerSect: Joi.string().required(),
+          partnerCity: Joi.string().required(),
         }),
       });
 
@@ -190,7 +194,8 @@ const userAuthController = {
           error.status = 404;
           return next(error);
         }
-
+        user.profileCompleted = true;
+        await user.save();
         return res
           .status(200)
           .json({ message: "User updated successfully", user });

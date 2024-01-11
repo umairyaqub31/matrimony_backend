@@ -1,15 +1,15 @@
 const express = require("express");
 const userAuthController = require("../controller/userAuthController");
+const userMatchController = require("../controller/userMatchController");
 // const ambulanceCrudController = require("../controller/Ambulance/ambulanceCrudController");
 // const ambulanceDashController = require("../controller/Ambulance/ambulanceDashController");
 // const ambulanceRequestController = require("../controller/Ambulance/ambulanceRequestController");
 const VerificationController = require("../controller/verificationController");
-const auth = require('../middlewares/auth');
+const auth = require("../middlewares/auth");
 // const uploadFileController = require("../controller/uploadFileController");
 // const multer = require("multer");
 const router = express.Router();
 // const upload = multer({ dest: "temp/" });
-
 
 //..............auth...............
 router.post("/user/register", userAuthController.register);
@@ -25,5 +25,8 @@ router.post("/user/sendCodeToEmail", VerificationController.sendCodeToEmail);
 router.post("/user/confirmEmail", VerificationController.confirmEmail);
 // router.post("/ambulance/ResetLink", VerificationController.ResetLink);
 // router.post("/ambulance/resetPassword", VerificationController.resetPassword);
+
+//................match user....................
+router.get("/user/userMatch", auth, userMatchController.userMatch);
 
 module.exports = router;

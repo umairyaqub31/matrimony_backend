@@ -20,8 +20,24 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
+      enum: ["male", "female"],
     },
     DOB: {
+      type: String,
+    },
+    age: {
+      type: String,
+    },
+    height: {
+      type: String,
+    },
+    motherTongue: {
+      type: String,
+    },
+    sect: {
+      type: String,
+    },
+    city: {
       type: String,
     },
     highestDegree: {
@@ -39,31 +55,35 @@ const userSchema = new mongoose.Schema(
     workLocation: {
       type: String,
     },
-    partnerPreference: {
-        age: Number,
-        maritalStatus: String,
-        height: Number,
-        education: String,
-        partnerOccupation: String,
-        motherTongue: String,
-        partnerAnnualIncome: Number,
-        sect: String,
-        city: String,
+    maritalStatus: {
+      type: String,
+    },
+    userImages: [
+      {
+        type: String,
       },
-      profileCompleted: {
-        type: Boolean,
-        default: false
-      }
+    ],
+    partnerPreference: {
+      partnerAge: Number,
+      partnerMaritalStatus: String,
+      partnerHeight: Number,
+      education: String,
+      partnerOccupation: String,
+      partnerMotherTongue: String,
+      partnerAnnualIncome: Number,
+      partnerSect: String,
+      partnerCity: String,
+    },
+    profileCompleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-const user = mongoose.model(
-  "user",
-  userSchema,
-  "users"
-);
+const user = mongoose.model("user", userSchema, "users");
 
 module.exports = user;
