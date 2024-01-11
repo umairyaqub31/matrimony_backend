@@ -50,6 +50,10 @@ const userSchema = new mongoose.Schema(
         sect: String,
         city: String,
       },
+      profileCompleted: {
+        type: Boolean,
+        default: false
+      }
   },
   {
     timestamps: true
