@@ -52,7 +52,7 @@ const userMatchController = {
           { education: education },
           { occupation: occupation },
           { motherTongue: motherTongue },
-          { annualIncome: annualIncome },
+          { annualIncome: { $gte: minIncome, $lte: maxIncome } },
           { sect: sect },
           { city: city },
           // Add more conditions as needed
