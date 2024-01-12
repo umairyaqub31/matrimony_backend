@@ -150,7 +150,6 @@ const userAuthController = {
         gender: Joi.string().valid("male", "female").required(),
         DOB: Joi.string().required(),
         userId: Joi.string().required(),
-        age: Joi.number().required(),
         occupation: Joi.string().required(),
         employedIn: Joi.string().required(),
         annualIncome: Joi.number().required(),
