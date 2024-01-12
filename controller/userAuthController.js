@@ -154,7 +154,7 @@ const userAuthController = {
         employedIn: Joi.string().required(),
         annualIncome: Joi.number().required(),
         workLocation: Joi.string().required(),
-        age: Joi.string().number().required(),
+        age: Joi.number().required(),
         maritalStatus: Joi.string().required(),
         height: Joi.string().required(),
         motherTongue: Joi.string().required(),
