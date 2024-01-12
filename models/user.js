@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     age: {
-      type: String,
+      type: Number,
     },
     height: {
       type: String,
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     annualIncome: {
-      type: String,
+      type: Number,
     },
     workLocation: {
       type: String,
