@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema(
       },
     ],
     partnerPreference: {
-      partnerAge: Number,
+      partnerAge: String,
       partnerMaritalStatus: String,
       partnerHeight: Number,
       education: String,
