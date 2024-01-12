@@ -18,12 +18,13 @@ const userMatchController = {
     const ageRange = user.partnerPreference.partnerAge.split("-");
     const minAge = parseInt(ageRange[0], 10);
     const maxAge = parseInt(ageRange[1], 10);
-    const height = user.partnerPreference.partnerHeight;
+    const heightRange = user.partnerPreference.partnerHeight.split("-");
+    const minheight = parseInt(heightRange[0], 10);
+    const maxheight = parseInt(heightRange[1], 10);
     const education = user.partnerPreference.education;
     const occupation = user.partnerPreference.partnerOccupation;
     const motherTongue = user.partnerPreference.partnerMotherTongue;
-    const annualIncome = user.partnerPreference.partnerAnnualIncome;
-    const incomeRange = user.partnerPreference.partnerAge.split("-");
+    const incomeRange = user.partnerPreference.partnerAnnualIncome.split("-");
     const minIncome = parseInt(incomeRange[0], 10);
     const maxIncome = parseInt(incomeRange[1], 10);
     const sect = user.partnerPreference.partnerSect;
@@ -48,7 +49,7 @@ const userMatchController = {
         gender: gender,
         maritalStatus: maritalStatus,
         $or: [
-          { height: height },
+          { height: { $gte: minheight, $lte: maxheight } },
           { education: education },
           { occupation: occupation },
           { motherTongue: motherTongue },

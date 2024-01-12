@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
     },
     height: {
-      type: String,
+      type: Number,
     },
     motherTongue: {
       type: String,
@@ -66,7 +66,7 @@ const userSchema = new mongoose.Schema(
     partnerPreference: {
       partnerAge: String,
       partnerMaritalStatus: String,
-      partnerHeight: Number,
+      partnerHeight: String,
       education: String,
       partnerOccupation: String,
       partnerMotherTongue: String,

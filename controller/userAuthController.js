@@ -74,7 +74,7 @@ const userAuthController = {
   async login(req, res, next) {
     const userLoginSchema = Joi.object({
       email: Joi.string().min(5).max(30).required(),
-      password: Joi.string().pattern(passwordPattern),
+      password: Joi.string().required(),
     });
     const { error } = userLoginSchema.validate(req.body);
 
@@ -83,14 +83,15 @@ const userAuthController = {
     }
 
     const { email, password } = req.body;
+    console.log(password);
 
     let user;
 
     try {
       // match username
       user = await User.findOne({ email: email });
-      console.log(user);
-      if (!user) {
+      console.log("user", user);
+      if (user === null) {
         const error = {
           status: 401,
           message: "Invalid email",
@@ -156,7 +157,7 @@ const userAuthController = {
         workLocation: Joi.string().required(),
         age: Joi.number().required(),
         maritalStatus: Joi.string().required(),
-        height: Joi.string().required(),
+        height: Joi.number().required(),
         motherTongue: Joi.string().required(),
         sect: Joi.string().required(),
         city: Joi.string().required(),
@@ -164,7 +165,7 @@ const userAuthController = {
         partnerPreference: Joi.object({
           partnerAge: Joi.string().required(),
           partnerMaritalStatus: Joi.string().required(),
-          partnerHeight: Joi.number().required(),
+          partnerHeight: Joi.string().required(),
           education: Joi.string().required(),
           partnerOccupation: Joi.string().required(),
           partnerMotherTongue: Joi.string().required(),
