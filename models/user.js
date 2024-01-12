@@ -70,7 +70,7 @@ const userSchema = new mongoose.Schema(
       education: String,
       partnerOccupation: String,
       partnerMotherTongue: String,
-      partnerAnnualIncome: Number,
+      partnerAnnualIncome: String,
       partnerSect: String,
       partnerCity: String,
     },

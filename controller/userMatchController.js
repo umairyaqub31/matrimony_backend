@@ -15,17 +15,21 @@ const userMatchController = {
     const gender = userGender === "male" ? "female" : "male";
     const matchType = req.query.matchType;
     const maritalStatus = user.partnerPreference.partnerMaritalStatus;
-    const age = user.partnerPreference.partnerAge;
+    const ageRange = user.partnerPreference.partnerAge.split("-");
+    const minAge = parseInt(ageRange[0], 10);
+    const maxAge = parseInt(ageRange[1], 10);
     const height = user.partnerPreference.partnerHeight;
     const education = user.partnerPreference.education;
     const occupation = user.partnerPreference.partnerOccupation;
     const motherTongue = user.partnerPreference.partnerMotherTongue;
     const annualIncome = user.partnerPreference.partnerAnnualIncome;
+    const incomeRange = user.partnerPreference.partnerAge.split("-");
+    const minIncome = parseInt(incomeRange[0], 10);
+    const maxIncome = parseInt(incomeRange[1], 10);
     const sect = user.partnerPreference.partnerSect;
     const city = user.partnerPreference.partnerCity;
     let matchedUsers;
     if (matchType == "newUsers") {
-      console.log("object");
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -40,7 +44,7 @@ const userMatchController = {
       res.json({ matchedUsers });
     } else if (matchType == "match") {
       const partnerPreferenceCriteria = {
-        age: age,
+        age: { $gte: minAge, $lte: maxAge },
         gender: gender,
         maritalStatus: maritalStatus,
         $or: [

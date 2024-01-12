@@ -168,7 +168,7 @@ const userAuthController = {
           education: Joi.string().required(),
           partnerOccupation: Joi.string().required(),
           partnerMotherTongue: Joi.string().required(),
-          partnerAnnualIncome: Joi.number().required(),
+          partnerAnnualIncome: Joi.string().required(),
           partnerSect: Joi.string().required(),
           partnerCity: Joi.string().required(),
         }),
