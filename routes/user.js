@@ -27,6 +27,6 @@ router.post("/user/confirmEmail", VerificationController.confirmEmail);
 // router.post("/ambulance/resetPassword", VerificationController.resetPassword);
 
 //................match user....................
-router.get("/user/userMatch", auth, userMatchController.userMatch);
+router.get("/user/userMatch", userMatchController.userMatch);
 
 module.exports = router;

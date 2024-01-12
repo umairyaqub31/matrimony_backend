@@ -180,7 +180,7 @@ const userAuthController = {
         return next(error);
       }
 
-      const userId = req.user._id;
+      const userId = req.body.userId;
 
       try {
         const user = await User.findByIdAndUpdate(
