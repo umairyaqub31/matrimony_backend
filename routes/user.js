@@ -16,7 +16,7 @@ router.post("/user/register", userAuthController.register);
 router.post("/user/login", userAuthController.login);
 // router.post("/user/uploadFile", upload.single("file"), uploadFileController.uploadFile);
 // router.post("/user/completeSignup", userAuthController.completeSignup);
-router.put("/user/completeProfile", auth, userAuthController.completeProfile);
+router.put("/user/completeProfile", userAuthController.completeProfile);
 router.post("/user/logout", auth, userAuthController.logout);
 // router.post("/user/refresh", auth, ambulanceAuthController.refresh);
 
@@ -27,6 +27,6 @@ router.post("/user/confirmEmail", VerificationController.confirmEmail);
 // router.post("/ambulance/resetPassword", VerificationController.resetPassword);
 
 //................match user....................
-router.get("/user/userMatch", userMatchController.userMatch);
+router.get("/user/userMatch", auth, userMatchController.userMatch);
 
 module.exports = router;
