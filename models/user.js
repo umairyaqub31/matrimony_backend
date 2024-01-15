@@ -58,6 +58,13 @@ const userSchema = new mongoose.Schema(
     maritalStatus: {
       type: String,
     },
+    recentlyViewed: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User",
+        default: []
+      },
+    ],
     userImages: [
       {
         type: String,

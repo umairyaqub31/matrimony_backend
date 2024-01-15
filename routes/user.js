@@ -28,5 +28,6 @@ router.post("/user/confirmEmail", VerificationController.confirmEmail);
 
 //................match user....................
 router.get("/user/userMatch", auth, userMatchController.userMatch);
+router.post("/user/recentlyViewed", auth, userMatchController.recentlyViewed);
 
 module.exports = router;
