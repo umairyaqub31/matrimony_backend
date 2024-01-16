@@ -91,17 +91,17 @@ const userAuthController = {
       // match username
       user = await User.findOne({ email: email });
       console.log("user", user);
-      if (user === null) {
+      if (user == null) {
         const error = {
           status: 401,
           message: "Invalid email",
         };
+        return next(error);
       }
 
       // match password
 
       const match = await bcrypt.compare(password, user.password);
-      console.log("object");
 
       if (!match) {
         const error = {
