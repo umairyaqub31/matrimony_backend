@@ -73,38 +73,46 @@ const userMatchController = {
   async recentlyViewed(req, res, next) {
     const viewerId = req.user._id;
     const viewedUserId = req.query.userId; // Assuming the user ID is in the userId property
-  
+
     try {
       // Find the viewer user in the database
       const viewerUser = await User.findById(viewerId);
-  
+
       if (!viewerUser) {
-        return res.status(404).json({ error: 'Viewer user not found' });
+        return res.status(404).json({ error: "Viewer user not found" });
       }
       // Check if viewedUserId is already in the most recent position
+      console.log(viewerUser.recentlyViewed.length);
+      console.log(viewerUser.recentlyViewed[0]);
+      console.log(viewedUserId);
       if (
         viewerUser.recentlyViewed.length > 0 &&
         viewerUser.recentlyViewed[0] == viewedUserId // Convert ObjectId to string for comparison
       ) {
-        return res.json({ success: true, message: 'User already in the most recent position' });
+        return res.json({
+          success: true,
+          message: "User already in the most recent position",
+        });
       }
       // Add viewedUserId to the most recent position
       viewerUser.recentlyViewed.unshift(viewedUserId);
-  
+
       // Limit the array to a certain size (optional)
       const maxArraySize = 10; // You can adjust this based on your requirements
-      viewerUser.recentlyViewed = viewerUser.recentlyViewed.slice(0, maxArraySize);
-  
+      viewerUser.recentlyViewed = viewerUser.recentlyViewed.slice(
+        0,
+        maxArraySize
+      );
+
       // Save the updated user document
       await viewerUser.save();
-  
-      res.json({ success: true, message: 'User added to recently viewed' });
+
+      res.json({ success: true, message: "User added to recently viewed" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: "Internal Server Error" });
     }
-  }
-  
+  },
 };
 
 module.exports = userMatchController;
