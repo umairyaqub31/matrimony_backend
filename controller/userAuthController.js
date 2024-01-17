@@ -6,6 +6,7 @@ const User = require("../models/user.js");
 const JWTService = require("../services/JWTService.js");
 const RefreshToken = require("../models/token.js");
 const AccessToken = require("../models/accessToken.js");
+const { sendchatNotification } = require("../firebase/service/index.js");
 
 const passwordPattern =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
@@ -91,6 +92,10 @@ const userAuthController = {
       // match username
       user = await User.findOne({ email: email });
       console.log("user", user);
+
+      // send Notification
+      // sendchatNotification(user?._id);
+
       if (user == null) {
         const error = {
           status: 401,
