@@ -12,12 +12,14 @@ const passwordPattern =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
 
 const userAuthController = {
+  //.......................................Register..................................//
   async register(req, res, next) {
     const userRegisterSchema = Joi.object({
       name: Joi.string().required(),
       email: Joi.string().required(),
       phone: Joi.string().required(),
       password: Joi.string().pattern(passwordPattern).required(),
+      fcmToken: Joi.string(),
     });
 
     const { error } = userRegisterSchema.validate(req.body);
@@ -26,7 +28,7 @@ const userAuthController = {
       return next(error);
     }
 
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, fcmToken } = req.body;
     const emailExists = await User.findOne({ email });
     console.log(emailExists);
     if (emailExists) {
@@ -49,6 +51,7 @@ const userAuthController = {
         email,
         phone,
         password: hashedPassword,
+        fcmToken,
       });
 
       user = await userToRegister.save();
@@ -71,11 +74,13 @@ const userAuthController = {
 
     return res.status(201).json({ user: user, auth: true, token: accessToken });
   },
+  //.......................................Login..................................//
 
   async login(req, res, next) {
     const userLoginSchema = Joi.object({
       email: Joi.string().min(5).max(30).required(),
       password: Joi.string().required(),
+      fcmToken: Joi.string(),
     });
     const { error } = userLoginSchema.validate(req.body);
 
@@ -83,7 +88,7 @@ const userAuthController = {
       return next(error);
     }
 
-    const { email, password } = req.body;
+    const { email, password, fcmToken } = req.body;
     console.log(password);
 
     let user;
@@ -91,10 +96,6 @@ const userAuthController = {
     try {
       // match username
       user = await User.findOne({ email: email });
-      console.log("user", user);
-
-      // send Notification
-      // sendchatNotification(user?._id);
 
       if (user == null) {
         const error = {
@@ -102,6 +103,15 @@ const userAuthController = {
           message: "Invalid email",
         };
         return next(error);
+      } else {
+        //update fcmToken
+        if (fcmToken && user?.fcmToken !== fcmToken) {
+          Object.keys(user).map((key) => (user["fcmToken"] = fcmToken));
+
+          let update = await user.save();
+        } else {
+          console.log("same Token");
+        }
       }
 
       // match password
@@ -149,6 +159,8 @@ const userAuthController = {
 
     return res.status(200).json({ user: user, auth: true, token: accessToken });
   },
+
+  //.......................................CompleteProfile..................................//
 
   async completeProfile(req, res, next) {
     try {
@@ -212,6 +224,8 @@ const userAuthController = {
       return next(error);
     }
   },
+
+  //.......................................Logout..................................//
 
   async logout(req, res, next) {
     const userId = req.user._id;

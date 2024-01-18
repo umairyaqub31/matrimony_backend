@@ -58,11 +58,14 @@ const userSchema = new mongoose.Schema(
     maritalStatus: {
       type: String,
     },
+    fcmToken: {
+      type: String,
+    },
     recentlyViewed: [
       {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "User",
-        default: []
+        default: [],
       },
     ],
     userImages: [

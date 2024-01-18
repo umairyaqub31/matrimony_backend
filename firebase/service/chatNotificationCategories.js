@@ -30,19 +30,19 @@ const chatnotificationsCategories = {
   },
 };
 
-// async function getFcmTokenForChat(userId) {
-//   try {
-//     const gettingDeviceToken = await User.findById({ _id: userId });
-//     let deviceToken = gettingDeviceToken.firebaseToken;
-//     if (deviceToken) {
-//       return deviceToken;
-//     } else {
-//       console.log("users device token does not exist");
-//     }
-//   } catch (err) {
-//     console.log("error retreiving FCM token:", err);
-//     throw err;
-//   }
-// }
+async function getFcmTokenForChat(userId) {
+  try {
+    const gettingDeviceToken = await User.findById({ _id: userId });
+    let deviceToken = gettingDeviceToken.fcmToken;
+    if (deviceToken) {
+      return deviceToken;
+    } else {
+      console.log("users device token does not exist");
+    }
+  } catch (err) {
+    console.log("error retreiving FCM token:", err);
+    throw err;
+  }
+}
 
-module.exports = { chatnotificationsCategories };
+module.exports = { chatnotificationsCategories, getFcmTokenForChat };

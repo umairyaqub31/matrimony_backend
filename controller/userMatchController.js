@@ -6,8 +6,11 @@ const User = require("../models/user.js");
 const JWTService = require("../services/JWTService.js");
 const RefreshToken = require("../models/token.js");
 const AccessToken = require("../models/accessToken.js");
+const { sendchatNotification } = require("../firebase/service/index.js");
 
 const userMatchController = {
+  //.......................................userMatch..................................//
+
   async userMatch(req, res, next) {
     const userId = req.user._id;
     const user = await User.findById(userId);
@@ -69,6 +72,7 @@ const userMatchController = {
       res.json({ matchedUsers });
     }
   },
+  //.......................................RecentlyViewed..................................//
 
   async recentlyViewed(req, res, next) {
     const viewerId = req.user._id;
@@ -112,6 +116,49 @@ const userMatchController = {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
     }
+  },
+
+  //.......................................SendInterest..................................//
+
+  async sendInterest(req, res, next) {
+    const interestSchema = Joi.object({
+      senderId: Joi.string().required(),
+      receiverId: Joi.string().required(),
+    });
+    const { error } = interestSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+
+    const { senderId, receiverId } = req.body;
+
+    let receiver;
+
+    try {
+      // match userId
+      receiver = await User.findOne({ _id: receiverId });
+
+      if (receiver == null) {
+        const error = {
+          status: 401,
+          message: "Invalid receiverId",
+        };
+        return next(error);
+      } else {
+        let sender = await User.findOne({ _id: senderId });
+
+        sendchatNotification(receiverId, {
+          message: `${sender?.name} had sent you an interest`,
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+
+    return res.status(200).json({ message: "Interest sent successfully!" });
+
+    // return res.status(200).json({ user: user, auth: true, token: accessToken });
   },
 };
 

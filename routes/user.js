@@ -30,4 +30,8 @@ router.post("/user/confirmEmail", VerificationController.confirmEmail);
 router.get("/user/userMatch", auth, userMatchController.userMatch);
 router.post("/user/recentlyViewed", auth, userMatchController.recentlyViewed);
 
+//................................Interests..................................//
+
+router.post("/user/sendInterest", auth, userMatchController.sendInterest);
+
 module.exports = router;

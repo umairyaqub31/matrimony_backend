@@ -6,17 +6,18 @@ const {
 } = require("./chatNotificationCategories");
 
 async function sendchatNotification(
-  userId
+  userId,
+  messageData
   //   chatnotificationCategory
-  //   messageData,
   //   channelId,
   //   senderId
 ) {
   //   const { type, template, path } =
   //     chatnotificationsCategories[chatnotificationCategory];
-  //   let userToken = await getFcmTokenForChat(userId);
-  let userToken =
-    "fqHcHn3QTL-cuwjwd6PMz2:APA91bGZ78UsczXQGcRyxvt0d9IgiPxAYt4mE9XVtugqnZIaE-CPXzBZDJ80nV2QnnPUGlQe3Ai_i-MP4WJeVwRSipAm8ZbQ2p4IdBP5Wr3a7N4fBC0Ble7aS4QYtU023oRxV-0xcKPu";
+  let userToken = await getFcmTokenForChat(userId);
+
+  //   let userToken =
+  // "fqHcHn3QTL-cuwjwd6PMz2:APA91bGZ78UsczXQGcRyxvt0d9IgiPxAYt4mE9XVtugqnZIaE-CPXzBZDJ80nV2QnnPUGlQe3Ai_i-MP4WJeVwRSipAm8ZbQ2p4IdBP5Wr3a7N4fBC0Ble7aS4QYtU023oRxV-0xcKPu";
 
   //   const [chatTemplateData, userType] = await Promise.all([
   //     chatTemplatePlaceholder(type, template, messageData, senderId),
@@ -29,7 +30,7 @@ async function sendchatNotification(
       //   title: chatTemplateData[0],
       //   body: chatTemplateData[1],
       title: "Matrimonial",
-      body: "Hello! this is from Matrimonial",
+      body: messageData?.message,
     },
   };
 
