@@ -3,6 +3,8 @@ const app = express();
 const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.js");
+const Notification = require("../models/notification.js");
+const MatchRequest = require("../models/matchRequest.js");
 const JWTService = require("../services/JWTService.js");
 const RefreshToken = require("../models/token.js");
 const AccessToken = require("../models/accessToken.js");
@@ -131,13 +133,18 @@ const userMatchController = {
       return next(error);
     }
 
-    const { senderId, receiverId } = req.body;
-
+    const { receiverId } = req.body;
+    const senderId = req.user._id;
     let receiver;
 
     try {
       // match userId
       receiver = await User.findOne({ _id: receiverId });
+      const matchRequest = new MatchRequest({
+        senderId,
+        receiverId,
+      });
+      await matchRequest.save();
 
       if (receiver == null) {
         const error = {
@@ -147,9 +154,16 @@ const userMatchController = {
         return next(error);
       } else {
         let sender = await User.findOne({ _id: senderId });
+        const notification = new Notification({
+          senderId,
+          receiverId,
+          title: "Matrimonial",
+          message: `${sender?.name} has sent you an interest`,
+        });
+        await notification.save();
 
         sendchatNotification(receiverId, {
-          message: `${sender?.name} had sent you an interest`,
+          message: `${sender?.name} has sent you an interest`,
         });
       }
     } catch (error) {
@@ -159,6 +173,32 @@ const userMatchController = {
     return res.status(200).json({ message: "Interest sent successfully!" });
 
     // return res.status(200).json({ user: user, auth: true, token: accessToken });
+  },
+
+  async getMatchRequests(req, res, next) {
+    try {
+      const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
+      const requestsPerPage = 10;
+      const receiverId = req.user._id;
+      const totalRequests = await MatchRequest.find({ receiverId, status: "pending" });
+      const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
+
+      const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
+
+      const requests = await MatchRequest.find({ receiverId, status: "pending" })
+        .skip(skip)
+        .limit(requestsPerPage);
+      let previousPage = page > 1 ? page - 1 : null;
+      let nextPage = page < totalPages ? page + 1 : null;
+      return res.status(200).json({
+        requests: requests,
+        auth: true,
+        previousPage: previousPage,
+        nextPage: nextPage,
+      });
+    } catch (error) {
+      return next(error);
+    }
   },
 };
 

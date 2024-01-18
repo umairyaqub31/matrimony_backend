@@ -1,6 +1,7 @@
 const express = require("express");
 const userAuthController = require("../controller/userAuthController");
 const userMatchController = require("../controller/userMatchController");
+const userNotificationController = require("../controller/userNotificationController");
 // const ambulanceCrudController = require("../controller/Ambulance/ambulanceCrudController");
 // const ambulanceDashController = require("../controller/Ambulance/ambulanceDashController");
 // const ambulanceRequestController = require("../controller/Ambulance/ambulanceRequestController");
@@ -29,6 +30,11 @@ router.post("/user/confirmEmail", VerificationController.confirmEmail);
 //................match user....................
 router.get("/user/userMatch", auth, userMatchController.userMatch);
 router.post("/user/recentlyViewed", auth, userMatchController.recentlyViewed);
+router.get("/user/getMatchRequests", auth, userMatchController.getMatchRequests);
+
+//................notifications.............................//
+router.get("/user/getNotifications", auth, userNotificationController.getNotifications);
+
 
 //................................Interests..................................//
 
