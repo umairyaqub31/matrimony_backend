@@ -130,7 +130,7 @@ const userMatchController = {
     res.json({ success: true, recentlyViewed: user.recentlyViewed});
 
   },
-
+ 
   //.......................................SendInterest..................................//
 
   async sendInterest(req, res, next) {
