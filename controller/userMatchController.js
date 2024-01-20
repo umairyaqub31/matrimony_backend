@@ -37,7 +37,7 @@ const userMatchController = {
     let matchedUsers;
     if (matchType == "newUsers") {
       const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 15);
 
       // Fetch users with the opposite gender and requests from the last 7 days
       matchedUsers = await User.find({
@@ -180,12 +180,18 @@ const userMatchController = {
       const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
       const requestsPerPage = 10;
       const receiverId = req.user._id;
-      const totalRequests = await MatchRequest.find({ receiverId, status: "pending" });
+      const totalRequests = await MatchRequest.find({
+        receiverId,
+        status: "pending",
+      });
       const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
 
       const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
 
-      const requests = await MatchRequest.find({ receiverId, status: "pending" })
+      const requests = await MatchRequest.find({
+        receiverId,
+        status: "pending",
+      })
         .skip(skip)
         .limit(requestsPerPage);
       let previousPage = page > 1 ? page - 1 : null;
