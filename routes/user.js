@@ -30,6 +30,7 @@ router.post("/user/confirmEmail", VerificationController.confirmEmail);
 //................match user....................
 router.get("/user/userMatch", auth, userMatchController.userMatch);
 router.post("/user/recentlyViewed", auth, userMatchController.recentlyViewed);
+router.get("/user/getRecentViewed", auth, userMatchController.getRecentViewed);
 router.get("/user/getMatchRequests", auth, userMatchController.getMatchRequests);
 
 //................notifications.............................//
