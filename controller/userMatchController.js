@@ -188,7 +188,9 @@ const userMatchController = {
     // return res.status(200).json({ user: user, auth: true, token: accessToken });
   },
 
-  async getMatchRequests(req, res, next) {
+  /////..........................matchRequests..........................//
+
+  async getPendingRequests(req, res, next) {
     try {
       const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
       const requestsPerPage = 10;
@@ -220,6 +222,120 @@ const userMatchController = {
       return next(error);
     }
   },
+
+  async acceptRequest(req, res, next) {
+    try {
+      const requestId = req.query.requestId;
+      const request = await MatchRequest.findById(requestId);
+      if (!request) {
+        const error = new Error("Request not found!");
+        error.status = 404;
+        return next(error);
+      }
+      request.status = "accept";
+      await request.save();
+      // const onRoute = new OnRoute({
+      //   ambulanceId: request.ambulanceId,
+      //   customerId: request.customerId,
+      //   dateAndTime: Date.now(),
+      //   vehicleNo: req.body.vehicleNo,
+      // });
+      // await onRoute.save();
+      return res.status(200).json({
+        auth: true,
+        message: "Request Accepted successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async rejectRequest(req, res, next) {
+    try {
+      const requestId = req.query.requestId;
+      const request = await MatchRequest.findById(requestId);
+      if (!request) {
+        const error = new Error("Request not found!");
+        error.status = 404;
+        return next(error);
+      }
+      request.status = "reject";
+      await request.save();
+      return res.status(200).json({
+        auth: true,
+        message: "Booking rejected successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async getAcceptedRequests(req, res, next) {
+    try {
+      const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
+      const requestsPerPage = 10;
+      const receiverId = req.user._id;
+      const totalRequests = await MatchRequest.countDocuments({
+        receiverId,
+        status: "accept",
+      });
+      const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
+
+      const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
+
+      const requests = await MatchRequest.find({
+        receiverId,
+        status: "accept",
+      })
+        .skip(skip)
+        .limit(requestsPerPage)
+        .populate("senderId");
+      let previousPage = page > 1 ? page - 1 : null;
+      let nextPage = page < totalPages ? page + 1 : null;
+      return res.status(200).json({
+        requests: requests,
+        auth: true,
+        previousPage: previousPage,
+        nextPage: nextPage,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async getRejectedRequests(req, res, next) {
+    try {
+      const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
+      const requestsPerPage = 10;
+      const receiverId = req.user._id;
+      const totalRequests = await MatchRequest.countDocuments({
+        receiverId,
+        status: "reject",
+      });
+      const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
+
+      const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
+
+      const requests = await MatchRequest.find({
+        receiverId,
+        status: "reject",
+      })
+        .skip(skip)
+        .limit(requestsPerPage)
+        .populate("senderId");
+      let previousPage = page > 1 ? page - 1 : null;
+      let nextPage = page < totalPages ? page + 1 : null;
+      return res.status(200).json({
+        requests: requests,
+        auth: true,
+        previousPage: previousPage,
+        nextPage: nextPage,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
 };
 
 module.exports = userMatchController;

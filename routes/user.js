@@ -21,17 +21,24 @@ router.put("/user/completeProfile", userAuthController.completeProfile);
 router.post("/user/logout", auth, userAuthController.logout);
 // router.post("/user/refresh", auth, ambulanceAuthController.refresh);
 
-//..............verification.........
+//..............verification.....................//
 router.post("/user/sendCodeToEmail", VerificationController.sendCodeToEmail);
 router.post("/user/confirmEmail", VerificationController.confirmEmail);
 // router.post("/ambulance/ResetLink", VerificationController.ResetLink);
 // router.post("/ambulance/resetPassword", VerificationController.resetPassword);
 
-//................match user....................
-router.get("/user/userMatch", auth, userMatchController.userMatch);
+//....................recentlyViewed...................//
 router.post("/user/recentlyViewed", auth, userMatchController.recentlyViewed);
 router.get("/user/getRecentViewed", auth, userMatchController.getRecentViewed);
-router.get("/user/getMatchRequests", auth, userMatchController.getMatchRequests);
+
+
+//................match user....................
+router.get("/user/userMatch", auth, userMatchController.userMatch);
+router.get("/user/getPendingRequests", auth, userMatchController.getPendingRequests);
+router.post("/user/acceptRequest", auth, userMatchController.acceptRequest);
+router.post("/user/rejectRequest", auth, userMatchController.rejectRequest);
+router.post("/user/getAcceptedRequests", auth, userMatchController.getAcceptedRequests);
+router.post("/user/getRejectedRequests", auth, userMatchController.getRejectedRequests);
 
 //................notifications.............................//
 router.get("/user/getNotifications", auth, userNotificationController.getNotifications);
