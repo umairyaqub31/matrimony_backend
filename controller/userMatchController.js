@@ -209,7 +209,7 @@ const userMatchController = {
       })
         .skip(skip)
         .limit(requestsPerPage)
-        .populate("senderId");
+        .populate("receiverId");
       let previousPage = page > 1 ? page - 1 : null;
       let nextPage = page < totalPages ? page + 1 : null;
       return res.status(200).json({
@@ -234,16 +234,14 @@ const userMatchController = {
       }
       request.status = "accept";
       await request.save();
-      // const onRoute = new OnRoute({
-      //   ambulanceId: request.ambulanceId,
-      //   customerId: request.customerId,
-      //   dateAndTime: Date.now(),
-      //   vehicleNo: req.body.vehicleNo,
-      // });
-      // await onRoute.save();
+      const requests = await MatchRequest.find({
+        receiverId,
+        status: "pending",
+      });
+
       return res.status(200).json({
         auth: true,
-        message: "Request Accepted successfully",
+        requests: requests,
       });
     } catch (error) {
       return next(error);
@@ -253,6 +251,7 @@ const userMatchController = {
   async rejectRequest(req, res, next) {
     try {
       const requestId = req.query.requestId;
+      const receiverId = req.user._id;
       const request = await MatchRequest.findById(requestId);
       if (!request) {
         const error = new Error("Request not found!");
@@ -261,9 +260,14 @@ const userMatchController = {
       }
       request.status = "reject";
       await request.save();
+      const requests = await MatchRequest.find({
+        receiverId,
+        status: "pending",
+      });
+
       return res.status(200).json({
         auth: true,
-        message: "Booking rejected successfully",
+        requests: requests,
       });
     } catch (error) {
       return next(error);
@@ -335,7 +339,6 @@ const userMatchController = {
       return next(error);
     }
   },
-
 };
 
 module.exports = userMatchController;
