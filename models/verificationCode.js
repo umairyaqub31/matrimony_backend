@@ -9,7 +9,7 @@ const verificationCodeSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      expires: 120, // Expires the document after 120 seconds (2 minutes)
+      expires: 7 * 24 * 60 * 60, // Expires the document after 120 seconds (2 minutes)
     },
   },
   { timestamps: true }
