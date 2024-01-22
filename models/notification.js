@@ -6,22 +6,22 @@ const notificatioSchema = Schema(
   {
     senderId: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: "User"
+      ref: "user",
     },
     receiverId: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: "User"
+      ref: "user",
     },
     title: {
-        type: String
+      type: String,
     },
     message: {
-        type: String
+      type: String,
     },
     createdAt: {
         type: Date,
-        default: Date.now,
-        expires: 7 * 24 * 60 * 60, // Expires the document after 120 seconds (2 minutes)
+        default: Date.now(),
+        expires: 120,
       },
   },
   { timestamps: true }
