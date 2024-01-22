@@ -20,8 +20,8 @@ const notificatioSchema = Schema(
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
-        expires: 120,
+        default: Date.now,
+        expires: 7 * 24 * 60 * 60,
       },
   },
   { timestamps: true }

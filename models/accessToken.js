@@ -4,7 +4,7 @@ const {Schema} = mongoose;
 
 const accessTokenSchema = Schema({
     token: {type: String, required: true},
-    userId: {type: mongoose.SchemaTypes.ObjectId, ref: 'User'}
+    userId: {type: mongoose.SchemaTypes.ObjectId, ref: 'user'}
 },
 {timestamps: true}
 

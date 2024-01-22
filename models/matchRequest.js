@@ -6,11 +6,11 @@ const matchRequestSchema = Schema(
   {
     senderId: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: "User",
+      ref: "user",
     },
     receiverId: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: "User",
+      ref: "user",
     },
     status: {
       type: String,

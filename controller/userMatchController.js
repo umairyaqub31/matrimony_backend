@@ -193,7 +193,7 @@ const userMatchController = {
       const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
       const requestsPerPage = 10;
       const receiverId = req.user._id;
-      const totalRequests = await MatchRequest.find({
+      const totalRequests = await MatchRequest.countDocuments({
         receiverId,
         status: "pending",
       });
@@ -206,7 +206,8 @@ const userMatchController = {
         status: "pending",
       })
         .skip(skip)
-        .limit(requestsPerPage);
+        .limit(requestsPerPage)
+        .populate("senderId");
       let previousPage = page > 1 ? page - 1 : null;
       let nextPage = page < totalPages ? page + 1 : null;
       return res.status(200).json({
