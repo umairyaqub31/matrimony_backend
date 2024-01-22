@@ -120,17 +120,19 @@ const userMatchController = {
     }
   },
 
-  async getRecentViewed(req,res,next){
+  async getRecentViewed(req, res, next) {
     const userId = req.user._id;
-    const user = await User.findById(userId).populate('recentlyViewed');
+    const user = await User.findById(userId).populate({
+      path: "recentlyViewed",
+      model: User,
+    });
 
     if (!user) {
       return res.status(404).json({ error: "user not found" });
     }
-    res.json({ success: true, recentlyViewed: user.recentlyViewed});
-
+    res.json({ success: true, recentlyViewed: user.recentlyViewed });
   },
- 
+
   //.......................................SendInterest..................................//
 
   async sendInterest(req, res, next) {
