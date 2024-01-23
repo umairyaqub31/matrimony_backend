@@ -227,7 +227,6 @@ const userAuthController = {
 
   async updateProfile(req, res, next) {
     const userSchema = Joi.object({
-      email: Joi.string(),
       phone: Joi.string(),
       name: Joi.string(),
       DOB: Joi.string(),
@@ -239,7 +238,7 @@ const userAuthController = {
     if (error) {
       return next(error);
     }
-    const { email, phone, name, DOB, userImages } = req.body;
+    const { phone, name, DOB, userImages } = req.body;
     const userId = req.user._id;
 
     const user = await User.findById(userId);
@@ -251,7 +250,6 @@ const userAuthController = {
     }
 
     // Update only the provided fields
-    if (email) user.email = email;
     if (phone) user.phone = phone;
     if (name) user.name = name;
     if (DOB) user.DOB = DOB;
