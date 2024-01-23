@@ -209,7 +209,7 @@ const userMatchController = {
       })
         .skip(skip)
         .limit(requestsPerPage)
-        .populate("receiverId");
+        .populate("senderId");
       let previousPage = page > 1 ? page - 1 : null;
       let nextPage = page < totalPages ? page + 1 : null;
       return res.status(200).json({
