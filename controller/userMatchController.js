@@ -223,6 +223,39 @@ const userMatchController = {
     }
   },
 
+  async getMyRequests(req, res, next) {
+    try {
+      const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
+      const requestsPerPage = 10;
+      const senderId = req.user._id;
+      const totalRequests = await MatchRequest.countDocuments({
+        senderId,
+        status: "pending",
+      });
+      const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
+
+      const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
+
+      const requests = await MatchRequest.find({
+        senderId,
+        status: "pending",
+      })
+        .skip(skip)
+        .limit(requestsPerPage)
+        .populate("receiverId");
+      let previousPage = page > 1 ? page - 1 : null;
+      let nextPage = page < totalPages ? page + 1 : null;
+      return res.status(200).json({
+        requests: requests,
+        auth: true,
+        previousPage: previousPage,
+        nextPage: nextPage,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   async acceptRequest(req, res, next) {
     try {
       const requestId = req.query.requestId;
@@ -307,38 +340,38 @@ const userMatchController = {
     }
   },
 
-  async getRejectedRequests(req, res, next) {
-    try {
-      const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
-      const requestsPerPage = 10;
-      const receiverId = req.user._id;
-      const totalRequests = await MatchRequest.countDocuments({
-        receiverId,
-        status: "reject",
-      });
-      const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
+  // async getRejectedRequests(req, res, next) {
+  //   try {
+  //     const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
+  //     const requestsPerPage = 10;
+  //     const receiverId = req.user._id;
+  //     const totalRequests = await MatchRequest.countDocuments({
+  //       receiverId,
+  //       status: "reject",
+  //     });
+  //     const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
 
-      const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
+  //     const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
 
-      const requests = await MatchRequest.find({
-        receiverId,
-        status: "reject",
-      })
-        .skip(skip)
-        .limit(requestsPerPage)
-        .populate("senderId");
-      let previousPage = page > 1 ? page - 1 : null;
-      let nextPage = page < totalPages ? page + 1 : null;
-      return res.status(200).json({
-        requests: requests,
-        auth: true,
-        previousPage: previousPage,
-        nextPage: nextPage,
-      });
-    } catch (error) {
-      return next(error);
-    }
-  },
+  //     const requests = await MatchRequest.find({
+  //       receiverId,
+  //       status: "reject",
+  //     })
+  //       .skip(skip)
+  //       .limit(requestsPerPage)
+  //       .populate("senderId");
+  //     let previousPage = page > 1 ? page - 1 : null;
+  //     let nextPage = page < totalPages ? page + 1 : null;
+  //     return res.status(200).json({
+  //       requests: requests,
+  //       auth: true,
+  //       previousPage: previousPage,
+  //       nextPage: nextPage,
+  //     });
+  //   } catch (error) {
+  //     return next(error);
+  //   }
+  // },
 };
 
 module.exports = userMatchController;

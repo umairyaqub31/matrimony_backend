@@ -38,7 +38,7 @@ router.get("/user/getPendingRequests", auth, userMatchController.getPendingReque
 router.post("/user/acceptRequest", auth, userMatchController.acceptRequest);
 router.post("/user/rejectRequest", auth, userMatchController.rejectRequest);
 router.get("/user/getAcceptedRequests", auth, userMatchController.getAcceptedRequests);
-// router.post("/user/getRejectedRequests", auth, userMatchController.getRejectedRequests);
+router.post("/user/getMyRequests", auth, userMatchController.getMyRequests);
 
 //................notifications.............................//
 router.get("/user/getNotifications", auth, userNotificationController.getNotifications);
