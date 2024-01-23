@@ -3,6 +3,7 @@ const serviceAccount = require("../vaishakhi-matrimony-firebase-adminsdk-mjr6h-3
 
 firebase.initializeApp({
     credential: firebase.credential.cert(serviceAccount),
+        storageBucket: "vaishakhi-matrimony.appspot.com", // Replace with your actual storage bucket URL/
   });
 
   module.exports = {firebase};

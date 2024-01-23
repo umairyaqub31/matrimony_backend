@@ -7,17 +7,18 @@ const userNotificationController = require("../controller/userNotificationContro
 // const ambulanceRequestController = require("../controller/Ambulance/ambulanceRequestController");
 const VerificationController = require("../controller/verificationController");
 const auth = require("../middlewares/auth");
-// const uploadFileController = require("../controller/uploadFileController");
-// const multer = require("multer");
+const uploadFileController = require("../controller/uploadFileController");
+const multer = require("multer");
 const router = express.Router();
-// const upload = multer({ dest: "temp/" });
+const upload = multer({ dest: "temp/" });
 
 //..............auth...............
 router.post("/user/register", userAuthController.register);
 router.post("/user/login", userAuthController.login);
-// router.post("/user/uploadFile", upload.single("file"), uploadFileController.uploadFile);
+router.post("/user/uploadFile", upload.single("file"), uploadFileController.uploadFile);
 // router.post("/user/completeSignup", userAuthController.completeSignup);
 router.put("/user/completeProfile", userAuthController.completeProfile);
+router.put("/user/updateProfile", auth, userAuthController.updateProfile);
 router.post("/user/logout", auth, userAuthController.logout);
 // router.post("/user/refresh", auth, ambulanceAuthController.refresh);
 

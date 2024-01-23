@@ -68,9 +68,7 @@ const userSchema = new mongoose.Schema(
       },
     ],
     userImages: [
-      {
-        type: String,
-      },
+         String,
     ],
     partnerPreference: {
       partnerAge: String,

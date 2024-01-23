@@ -225,6 +225,47 @@ const userAuthController = {
     }
   },
 
+  async updateProfile(req, res, next) {
+    const userSchema = Joi.object({
+      email: Joi.string(),
+      phone: Joi.string(),
+      name: Joi.string(),
+      DOB: Joi.string(),
+      userImages: Joi.array(),
+    });
+
+    const { error } = userSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+    const { email, phone, name, DOB, userImages } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      const error = new Error("User not found!");
+      error.status = 404;
+      return next(error);
+    }
+
+    // Update only the provided fields
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (name) user.name = name;
+    if (DOB) user.DOB = DOB;
+    if (userImages) user.userImages = userImages;
+
+    // Save the updated test
+    await user.save();
+
+    return res.status(200).json({
+      message: "User updated successfully",
+      user: user,
+    });
+  },
+
   //.......................................Logout..................................//
 
   async logout(req, res, next) {
