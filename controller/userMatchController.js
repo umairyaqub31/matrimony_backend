@@ -260,6 +260,7 @@ const userMatchController = {
     try {
       const requestId = req.query.requestId;
       const request = await MatchRequest.findById(requestId);
+      const receiverId = req.user._id;
       if (!request) {
         const error = new Error("Request not found!");
         error.status = 404;
