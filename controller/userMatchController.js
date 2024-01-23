@@ -5,9 +5,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user.js");
 const Notification = require("../models/notification.js");
 const MatchRequest = require("../models/matchRequest.js");
-const JWTService = require("../services/JWTService.js");
-const RefreshToken = require("../models/token.js");
-const AccessToken = require("../models/accessToken.js");
+const AcceptedRequest = require("../models/acceptedRequest.js");
 const { sendchatNotification } = require("../firebase/service/index.js");
 
 const userMatchController = {
@@ -266,12 +264,27 @@ const userMatchController = {
         error.status = 404;
         return next(error);
       }
+      if (request.status == "accept") {
+        const error = new Error("Request already accepted!");
+        error.status = 409;
+        return next(error);
+      }
+      if (request.status == "reject") {
+        const error = new Error("Request is rejected!");
+        error.status = 409;
+        return next(error);
+      }
       request.status = "accept";
       await request.save();
       const requests = await MatchRequest.find({
         receiverId,
         status: "pending",
       });
+      const acceptedRequest = new AcceptedRequest({
+        senderId: request.senderId,
+        receiverId: request.receiverId,
+      });
+      await acceptedRequest.save();
 
       return res.status(200).json({
         auth: true,
