@@ -14,7 +14,7 @@ const matchRequestSchema = Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "accept", "reject"],
+      enum: ["pending", "accept"],
       default: "pending"
     },
   },

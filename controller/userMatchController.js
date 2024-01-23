@@ -305,8 +305,7 @@ const userMatchController = {
         error.status = 404;
         return next(error);
       }
-      request.status = "reject";
-      await request.save();
+      await MatchRequest.findByIdAndDelete(requestId);
       const requests = await MatchRequest.find({
         receiverId,
         status: "pending",
