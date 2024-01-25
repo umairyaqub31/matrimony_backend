@@ -35,7 +35,8 @@ router.get("/user/getRecentViewed", auth, userMatchController.getRecentViewed);
 
 //................match user....................
 router.get("/user/userMatch", auth, userMatchController.userMatch);
-router.get("/user/getPendingRequests", auth, userMatchController.getPendingRequests);
+router.get("/user/getPendingRequestsReceiver", auth, userMatchController.getPendingRequestsReceiver);
+router.get("/user/getPendingRequestsSender", auth, userMatchController.getPendingRequestsSender);
 router.post("/user/acceptRequest", auth, userMatchController.acceptRequest);
 router.post("/user/rejectRequest", auth, userMatchController.rejectRequest);
 router.get("/user/getAcceptedRequests", auth, userMatchController.getAcceptedRequests);
