@@ -1,156 +1,170 @@
 const express = require("express");
 const app = express();
-const User = require("../models/user")
+const User = require("../models/user");
 
 const dashboardController = {
   async dashDetails(req, res) {
-    // const doctorId = req.user._id;
-      const doctor = await User.findById(doctorId);
-      const doctorName = doctor.name;
-      const doctorImage = doctor.doctorImage;
-      const upcomingAppointment = await Appointment.findOne({ doctorId })
-        .sort({ createdAt: -1 }) // Sort in descending order based on createdAt
-        .limit(1);
-        
-        let patientName;
-        if (upcomingAppointment) {
-          const patientId = upcomingAppointment.patientId;
-          const patient = await User.findById(patientId);
-          patientName = patient.userName;
-        } else {
-          patientName = null;
-        }
+    try {
+      const totalUsers = await User.countDocuments();
+      const activeUsers = await User.countDocuments({ isActive: true });
+      const paidUsers = await User.countDocuments({ isPaid: true });
+      const featuredUsers = await User.countDocuments({ isFeatured: true });
 
       const currentDate = new Date();
       // Set the time to the beginning of the day
       currentDate.setHours(0, 0, 0, 0);
 
-      // Calculate yesterday's date
-      const yesterdayDate = new Date(currentDate);
-      yesterdayDate.setDate(currentDate.getDate() - 1);
+      // Calculate 30 days before date
+      const thirtyDaysBeforeDate = new Date(currentDate);
+      thirtyDaysBeforeDate.setDate(currentDate.getDate() - 30);
 
-      // Set the time to the beginning of yesterday
-      yesterdayDate.setHours(0, 0, 0, 0);
+      // Set the time to the beginning of the day
+      thirtyDaysBeforeDate.setHours(0, 0, 0, 0);
 
-      const dayBeforeYesterday = new Date(currentDate);
-      dayBeforeYesterday.setDate(currentDate.getDate() - 2);
+      const lastThirtyDaysUserCount = await User.countDocuments({
+        createdAt: { $gte: thirtyDaysBeforeDate },
+      });
 
-      // Set the time to the beginning of the day before yesterday
-      dayBeforeYesterday.setHours(0, 0, 0, 0);
+      const beforeThirtyDaysUserCount = await User.countDocuments({
+        createdAt: { $lt: thirtyDaysBeforeDate },
+      });
 
-      const weekStartDate = new Date(currentDate);
-      weekStartDate.setDate(currentDate.getDate() - 7);
+      const lastThirtyDaysActiveUserCount = await User.countDocuments({
+        createdAt: { $gte: thirtyDaysBeforeDate },
+        isActive: true,
+      });
 
-      // Set the time to the beginning of the week
-      weekStartDate.setHours(0, 0, 0, 0);
+      const beforeThirtyDaysActiveUserCount = await User.countDocuments({
+        createdAt: { $lt: thirtyDaysBeforeDate },
+        isActive: true,
+      });
 
-      const lastWeekStartDate = new Date(currentDate);
-      lastWeekStartDate.setDate(currentDate.getDate() - 14);
+      const lastThirtyDaysPaidUserCount = await User.countDocuments({
+        createdAt: { $gte: thirtyDaysBeforeDate },
+        isPaid: true,
+      });
 
-      // Set the time to the beginning of the week
-      lastWeekStartDate.setHours(0, 0, 0, 0);
+      const beforeThirtyDaysPaidUserCount = await User.countDocuments({
+        createdAt: { $lt: thirtyDaysBeforeDate },
+        isPaid: true,
+      });
 
-      const duration = req.query.duration;
-      if (!duration) {
-        const error = {
-          status: 400,
-          message: "Duration Period Missing",
-        };
+      const lastThirtyDaysFeaturedUserCount = await User.countDocuments({
+        createdAt: { $gte: thirtyDaysBeforeDate },
+        isPaid: true,
+      });
 
-        return next(error);
+      const beforeThirtyDaysFeaturedUserCount = await User.countDocuments({
+        createdAt: { $lt: thirtyDaysBeforeDate },
+        isPaid: true,
+      });
+
+      let userPercentageChange;
+      if (beforeThirtyDaysUserCount === 0) {
+        userPercentageChange = lastThirtyDaysUserCount * 100; // If last week's orders are zero, the change is undefined
+      } else {
+        userPercentageChange = (
+          ((lastThirtyDaysUserCount - beforeThirtyDaysUserCount) /
+            beforeThirtyDaysUserCount) *
+          100
+        ).toFixed(2);
       }
 
-      if (duration == "today") {
-        const todayPatientCount = await Appointment.find({
-          createdAt: { $gte: currentDate, $lt: new Date() },
-          doctorId,
-        })
-          .distinct("patientId")
-          .then((patientIds) => patientIds.length);
-
-        const yesPatientCount = await Appointment.find({
-          createdAt: { $gte: yesterdayDate, $lt: currentDate },
-          doctorId,
-        })
-          .distinct("patientId")
-          .then((patientIds) => patientIds.length);
-
-        let patientPercentageChange;
-        if (yesPatientCount === 0) {
-          patientPercentageChange = todayPatientCount * 100; // If last week's orders are zero, the change is undefined
-        } else {
-          patientPercentageChange = (
-            ((todayPatientCount - yesPatientCount) / yesPatientCount) *
-            100
-          ).toFixed(2);
-        }
-
-        if (patientPercentageChange > 0) {
-          patientPercentageChange = "+" + patientPercentageChange + "%";
-        } else {
-          patientPercentageChange = patientPercentageChange + "%";
-        }
-
-        const todayAppointCount = await Appointment.countDocuments({
-          createdAt: { $gte: currentDate, $lt: new Date() },
-          doctorId,
-        });
-
-        const yesAppointCount = await Appointment.countDocuments({
-          createdAt: { $gte: yesterdayDate, $lt: currentDate },
-          doctorId,
-        });
-
-        let appointmentPercentageChange;
-        if (yesAppointCount === 0) {
-          appointmentPercentageChange = todayAppointCount * 100; // If last week's orders are zero, the change is undefined
-        } else {
-          appointmentPercentageChange = (
-            ((todayAppointCount - yesAppointCount) / yesAppointCount) *
-            100
-          ).toFixed(2);
-        }
-
-        if (appointmentPercentageChange > 0) {
-          appointmentPercentageChange = "+" + appointmentPercentageChange + "%";
-        } else {
-          appointmentPercentageChange = appointmentPercentageChange + "%";
-        }
-        return res.json({
-          doctorName: doctorName,
-          upcomingAppointment: upcomingAppointment,
-          todayPatientCount: todayPatientCount,
-          patientPercentageChange: patientPercentageChange,
-          todayAppointCount: todayAppointCount,
-          appointmentPercentageChange: appointmentPercentageChange,
-        });
+      if (userPercentageChange > 0) {
+        userPercentageChange = "+" + userPercentageChange + "%";
+      } else {
+        userPercentageChange = userPercentageChange + "%";
       }
+
+      let activeUserPercentageChange;
+      if (beforeThirtyDaysActiveUserCount === 0) {
+        activeUserPercentageChange = lastThirtyDaysActiveUserCount * 100; // If last week's orders are zero, the change is undefined
+      } else {
+        activeUserPercentageChange = (
+          ((lastThirtyDaysActiveUserCount - beforeThirtyDaysActiveUserCount) /
+            beforeThirtyDaysActiveUserCount) *
+          100
+        ).toFixed(2);
+      }
+
+      if (activeUserPercentageChange > 0) {
+        activeUserPercentageChange = "+" + activeUserPercentageChange + "%";
+      } else {
+        activeUserPercentageChange = activeUserPercentageChange + "%";
+      }
+
+      let paidUserPercentageChange;
+      if (beforeThirtyDaysPaidUserCount === 0) {
+        paidUserPercentageChange = lastThirtyDaysPaidUserCount * 100; // If last week's orders are zero, the change is undefined
+      } else {
+        paidUserPercentageChange = (
+          ((lastThirtyDaysPaidUserCount - beforeThirtyDaysPaidUserCount) /
+            beforeThirtyDaysPaidUserCount) *
+          100
+        ).toFixed(2);
+      }
+
+      if (paidUserPercentageChange > 0) {
+        paidUserPercentageChange = "+" + paidUserPercentageChange + "%";
+      } else {
+        paidUserPercentageChange = paidUserPercentageChange + "%";
+      }
+
+      let featuredUserPercentageChange;
+      if (beforeThirtyDaysFeaturedUserCount === 0) {
+        featuredUserPercentageChange = lastThirtyDaysFeaturedUserCount * 100; // If last week's orders are zero, the change is undefined
+      } else {
+        featuredUserPercentageChange = (
+          ((lastThirtyDaysFeaturedUserCount -
+            beforeThirtyDaysFeaturedUserCount) /
+            beforeThirtyDaysFeaturedUserCount) *
+          100
+        ).toFixed(2);
+      }
+
+      if (featuredUserPercentageChange > 0) {
+        featuredUserPercentageChange = "+" + featuredUserPercentageChange + "%";
+      } else {
+        featuredUserPercentageChange = featuredUserPercentageChange + "%";
+      }
+
+      return res.json({
+        totalUsers: totalUsers,
+        userPercentageChange: userPercentageChange,
+        activeUsers: activeUsers,
+        activeUserPercentageChange: activeUserPercentageChange,
+        paidUsers: paidUsers,
+        paidUserPercentageChange: paidUserPercentageChange,
+        featuredUsers: featuredUsers,
+        featuredUserPercentageChange: featuredUserPercentageChange,
+      });
+    } catch (error) {
+      return next(error);
+    }
   },
 
-  async getAllUsers(req,res,next){
-    try {  
-        const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
-        const usersPerPage = 10;
-        const totalUsers = await User.countDocuments(); // Get the total number of posts for the user
-        const totalPages = Math.ceil(totalUsers / usersPerPage); // Calculate the total number of pages
-  
-        const skip = (page - 1) * usersPerPage; // Calculate the number of posts to skip based on the current page
-  
-        const users = await User.find()
-          .skip(skip)
-          .limit(usersPerPage);
-        let previousPage = page > 1 ? page - 1 : null;
-        let nextPage = page < totalPages ? page + 1 : null;
-        return res.status(200).json({
-          users: users,
-          auth: true,
-          previousPage: previousPage,
-          nextPage: nextPage,
-        });
-      } catch (error) {
-        return next(error);
-      }
-  }
+  async getAllUsers(req, res, next) {
+    try {
+      const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
+      const usersPerPage = 10;
+      const totalUsers = await User.countDocuments(); // Get the total number of posts for the user
+      const totalPages = Math.ceil(totalUsers / usersPerPage); // Calculate the total number of pages
+
+      const skip = (page - 1) * usersPerPage; // Calculate the number of posts to skip based on the current page
+
+      const users = await User.find().skip(skip).limit(usersPerPage);
+      let previousPage = page > 1 ? page - 1 : null;
+      let nextPage = page < totalPages ? page + 1 : null;
+      return res.status(200).json({
+        users: users,
+        auth: true,
+        previousPage: previousPage,
+        nextPage: nextPage,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
 };
 
 module.exports = dashboardController;

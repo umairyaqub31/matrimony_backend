@@ -9,7 +9,6 @@ app.use(express.json({ limit: "50mb" }));
 
 const userRouter = require("./routes/user");
 const adminRouter = require("./routes/admin");
-// const vendorRouter = require("./routes/vendor");
 
 app.use(userRouter);
 app.use(adminRouter);
