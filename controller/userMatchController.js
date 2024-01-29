@@ -365,13 +365,13 @@ const userMatchController = {
     try {
       const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
       const requestsPerPage = 10;
-      const receiverId = req.user._id;
+      const myId = req.user._id;
       // const totalRequests = await MatchRequest.countDocuments({
       //   receiverId,
       //   status: "accept",
       // });
       const totalRequests = await MatchRequest.countDocuments({
-        $or: [{ receiverId }, { senderId: receiverId }],
+        $or: [{ receiverId: myId }, { senderId: myId }],
         status: "accept",
       });
       const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
@@ -456,21 +456,29 @@ const userMatchController = {
       // });
 
       const requests = await MatchRequest.find({
-        $or: [{ receiverId }, { senderId: receiverId }],
+        $or: [{ receiverId: myId }, { senderId: myId }],
         status: "accept",
       })
         .skip(skip)
         .limit(requestsPerPage);
 
       await Promise.all(
-        requests.map(async (request) => {
-          const path = request.receiverId.equals(receiverId)
+        requests.map(async (request, index) => {
+          const path = request.receiverId.equals(myId)
             ? "senderId"
             : "receiverId";
           //       console.log(request.receiverId)
           // console.log(receiverId);
           //       console.log(path)
-          await request.populate(path);
+          // await request.populate(path);
+          let friend;
+          if (path == "senderId") {
+            friend = await User.findById(request.senderId);
+          } else {
+            friend = await User.findById(request.receiverId);
+          }
+
+          requests[index]._doc = { ...request._doc, friend: friend };
         })
       );
 
