@@ -67,9 +67,7 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    userImages: [
-         String,
-    ],
+    userImages: [String],
     partnerPreference: {
       partnerAge: String,
       partnerMaritalStatus: String,
@@ -97,6 +95,8 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    sentInterests: [String],
+    receivedInterests: [String],
   },
   {
     timestamps: true,

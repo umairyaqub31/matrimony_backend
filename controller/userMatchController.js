@@ -7,6 +7,7 @@ const Notification = require("../models/notification.js");
 const MatchRequest = require("../models/matchRequest.js");
 const AcceptedRequest = require("../models/acceptedRequest.js");
 const { sendchatNotification } = require("../firebase/service/index.js");
+const { ObjectID } = require("mongodb");
 
 const userMatchController = {
   //.......................................userMatch..................................//
@@ -86,9 +87,6 @@ const userMatchController = {
         return res.status(404).json({ error: "Viewer user not found" });
       }
       // Check if viewedUserId is already in the most recent position
-      console.log(viewerUser.recentlyViewed.length);
-      console.log(viewerUser.recentlyViewed[0]);
-      console.log(viewedUserId);
       if (
         viewerUser.recentlyViewed.length > 0 &&
         viewerUser.recentlyViewed[0] == viewedUserId // Convert ObjectId to string for comparison
@@ -135,7 +133,7 @@ const userMatchController = {
 
   async sendInterest(req, res, next) {
     const interestSchema = Joi.object({
-      senderId: Joi.string().required(),
+      senderId: Joi.string(),
       receiverId: Joi.string().required(),
     });
     const { error } = interestSchema.validate(req.body);
@@ -147,6 +145,8 @@ const userMatchController = {
     const { receiverId } = req.body;
     const senderId = req.user._id;
     let receiver;
+    let sender;
+    let updatedUser;
 
     try {
       // match userId
@@ -164,7 +164,7 @@ const userMatchController = {
         };
         return next(error);
       } else {
-        let sender = await User.findOne({ _id: senderId });
+        sender = await User.findOne({ _id: senderId });
         const notification = new Notification({
           senderId,
           receiverId,
@@ -176,12 +176,20 @@ const userMatchController = {
         sendchatNotification(receiverId, {
           message: `${sender?.name} has sent you an interest`,
         });
+
+        updatedUser = await User.findOneAndUpdate(
+          { _id: senderId },
+          { $addToSet: { sentInterests: receiverId } },
+          { new: true } // Return the updated document
+        );
       }
     } catch (error) {
       return next(error);
     }
 
-    return res.status(200).json({ message: "Interest sent successfully!" });
+    return res
+      .status(200)
+      .json({ message: "Interest sent successfully!", user: updatedUser });
 
     // return res.status(200).json({ user: user, auth: true, token: accessToken });
   },
@@ -359,7 +367,7 @@ const userMatchController = {
       const requestsPerPage = 10;
       const receiverId = req.user._id;
       // const totalRequests = await MatchRequest.countDocuments({
-        //   receiverId,
+      //   receiverId,
       //   status: "accept",
       // });
       const totalRequests = await MatchRequest.countDocuments({
@@ -456,11 +464,12 @@ const userMatchController = {
 
       await Promise.all(
         requests.map(async (request) => {
-          const path =
-          request.receiverId.equals(receiverId) ? "senderId" : "receiverId";
-      //       console.log(request.receiverId)
-      // console.log(receiverId);
-      //       console.log(path)
+          const path = request.receiverId.equals(receiverId)
+            ? "senderId"
+            : "receiverId";
+          //       console.log(request.receiverId)
+          // console.log(receiverId);
+          //       console.log(path)
           await request.populate(path);
         })
       );
