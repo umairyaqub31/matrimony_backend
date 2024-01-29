@@ -366,98 +366,15 @@ const userMatchController = {
       const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter
       const requestsPerPage = 10;
       const myId = req.user._id;
-      // const totalRequests = await MatchRequest.countDocuments({
-      //   receiverId,
-      //   status: "accept",
-      // });
-      const totalRequests = await MatchRequest.countDocuments({
+      const totalRequests = await AcceptedRequest.countDocuments({
         $or: [{ receiverId: myId }, { senderId: myId }],
-        status: "accept",
       });
       const totalPages = Math.ceil(totalRequests / requestsPerPage); // Calculate the total number of pages
 
       const skip = (page - 1) * requestsPerPage; // Calculate the number of posts to skip based on the current page
 
-      // const requests = await MatchRequest.aggregate([
-      //   {
-      //     $match: {
-      //       $or: [{ receiverId }, { senderId: receiverId }],
-      //       status: "accept",
-      //     },
-      //   },
-      //   {
-      //     $skip: skip,
-      //   },
-      //   {
-      //     $limit: requestsPerPage,
-      //   },
-      //   {
-      //     $lookup: {
-      //       from: "users", // Replace with the actual collection name
-      //       let: { senderId: "$senderId", receiverId: "$receiverId" },
-      //       pipeline: [
-      //         {
-      //           $match: {
-      //             $expr: {
-      //               $or: [
-      //                 { $eq: ["$_id", "$$senderId"] },
-      //                 { $eq: ["$_id", "$$receiverId"] },
-      //               ],
-      //             },
-      //           },
-      //         },
-      //       ],
-      //       as: "matchedUsers",
-      //     },
-      //   },
-      //   {
-      //     $project: {
-      //       _id: 1,
-      //       // Add other fields you want to keep
-      //       senderId: {
-      //         $cond: {
-      //           if: {
-      //             $and: [
-      //               { $eq: ["$receiverId", receiverId] },
-      //               { $isArray: "$matchedUsers" },
-      //               { $gt: [{ $size: "$matchedUsers" }, 0] },
-      //             ],
-      //           },
-      //           then: { $arrayElemAt: ["$matchedUsers._id", 0] }, // Populate senderId if receiverId matches
-      //           else: "$senderId",
-      //         },
-      //       },
-      //       receiverId: {
-      //         $cond: {
-      //           if: {
-      //             $and: [
-      //               { $eq: ["$senderId", receiverId] },
-      //               { $isArray: "$matchedUsers" },
-      //               { $gt: [{ $size: "$matchedUsers" }, 0] },
-      //             ],
-      //           },
-      //           then: { $arrayElemAt: ["$matchedUsers._id", 0] }, // Populate receiverId if senderId matches
-      //           else: "$receiverId",
-      //         },
-      //       },
-      //       // Add other fields you want to keep
-      //     },
-      //   },
-      // ]);
-
-      // // Access the populated data in each request
-      // const populatedRequests = requests.map((request) => {
-      //   const populatedUser = request.matchedUsers && request.matchedUsers[0];
-      //   return {
-      //     ...request,
-      //     senderId: populatedUser ? populatedUser._id : null,
-      //     // Add other fields you want to include from the populated user
-      //   };
-      // });
-
-      const requests = await MatchRequest.find({
+      const requests = await AcceptedRequest.find({
         $or: [{ receiverId: myId }, { senderId: myId }],
-        status: "accept",
       })
         .skip(skip)
         .limit(requestsPerPage);
@@ -467,10 +384,6 @@ const userMatchController = {
           const path = request.receiverId.equals(myId)
             ? "senderId"
             : "receiverId";
-          //       console.log(request.receiverId)
-          // console.log(receiverId);
-          //       console.log(path)
-          // await request.populate(path);
           let friend;
           if (path == "senderId") {
             friend = await User.findById(request.senderId);
