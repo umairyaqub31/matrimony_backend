@@ -9,13 +9,18 @@ const VerificationController = require("../controller/verificationController");
 const auth = require("../middlewares/auth");
 const uploadFileController = require("../controller/uploadFileController");
 const multer = require("multer");
+const chatController = require("../controller/chatController");
 const router = express.Router();
 const upload = multer({ dest: "temp/" });
 
 //..............auth...............
 router.post("/user/register", userAuthController.register);
 router.post("/user/login", userAuthController.login);
-router.post("/user/uploadFile", upload.single("file"), uploadFileController.uploadFile);
+router.post(
+  "/user/uploadFile",
+  upload.single("file"),
+  uploadFileController.uploadFile
+);
 // router.post("/user/completeSignup", userAuthController.completeSignup);
 router.put("/user/completeProfile", userAuthController.completeProfile);
 router.put("/user/updateProfile", auth, userAuthController.updateProfile);
@@ -32,22 +37,46 @@ router.post("/user/confirmEmail", VerificationController.confirmEmail);
 router.post("/user/recentlyViewed", auth, userMatchController.recentlyViewed);
 router.get("/user/getRecentViewed", auth, userMatchController.getRecentViewed);
 
-
 //................match user....................
 router.get("/user/userMatch", auth, userMatchController.userMatch);
-router.get("/user/getPendingRequestsReceiver", auth, userMatchController.getPendingRequestsReceiver);
-router.get("/user/getPendingRequestsSender", auth, userMatchController.getPendingRequestsSender);
+router.get(
+  "/user/getPendingRequestsReceiver",
+  auth,
+  userMatchController.getPendingRequestsReceiver
+);
+router.get(
+  "/user/getPendingRequestsSender",
+  auth,
+  userMatchController.getPendingRequestsSender
+);
 router.post("/user/acceptRequest", auth, userMatchController.acceptRequest);
 router.post("/user/rejectRequest", auth, userMatchController.rejectRequest);
-router.get("/user/getAcceptedRequests", auth, userMatchController.getAcceptedRequests);
+router.get(
+  "/user/getAcceptedRequests",
+  auth,
+  userMatchController.getAcceptedRequests
+);
 router.post("/user/getMyRequests", auth, userMatchController.getMyRequests);
 
 //................notifications.............................//
-router.get("/user/getNotifications", auth, userNotificationController.getNotifications);
-
+router.get(
+  "/user/getNotifications",
+  auth,
+  userNotificationController.getNotifications
+);
 
 //................................Interests..................................//
 
 router.post("/user/sendInterest", auth, userMatchController.sendInterest);
+
+//................................Chat..................................//
+
+router.get(
+  "/user/getAllConversation",
+  auth,
+  chatController.getAllConversations
+);
+
+router.get("/user/getMessages", auth, chatController.getMessages);
 
 module.exports = router;

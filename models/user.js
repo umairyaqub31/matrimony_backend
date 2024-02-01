@@ -61,6 +61,12 @@ const userSchema = new mongoose.Schema(
     fcmToken: {
       type: String,
     },
+    chatedUsers: [
+      {
+        roomId: String,
+        chatedId: String,
+      },
+    ],
     recentlyViewed: [
       {
         type: mongoose.SchemaTypes.ObjectId,
