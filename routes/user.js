@@ -11,7 +11,13 @@ const uploadFileController = require("../controller/uploadFileController");
 const multer = require("multer");
 const chatController = require("../controller/chatController");
 const router = express.Router();
-const upload = multer({ dest: "temp/" });
+// const upload = multer({ dest: "/temp" });
+
+const storage = multer.diskStorage({
+  destination: "./temp", // Update the destination path
+});
+
+const upload = multer({ storage: storage });
 
 //..............auth...............
 router.post("/user/register", userAuthController.register);
