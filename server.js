@@ -17,7 +17,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     // origin: "http://localhost:3000",
-    origin: "https://matrimonial-056a82a5ea8f.herokuapp.com/",
+    origin: "https://metrimonial-96e933524259.herokuapp.com/",
     methods: ["GET", "POST"],
   },
 });
