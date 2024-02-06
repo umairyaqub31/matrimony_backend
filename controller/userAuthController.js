@@ -40,6 +40,16 @@ const userAuthController = {
       return next(error);
     }
 
+    const phoneExists = await User.findOne({ phone });
+    // console.log(phoneExists);
+    if (phoneExists) {
+      const error = {
+        status: 401,
+        message: "Phone Number Already Registered",
+      };
+
+      return next(error);
+    }
     let accessToken;
     let refreshToken;
     const hashedPassword = await bcrypt.hash(password, 10);
