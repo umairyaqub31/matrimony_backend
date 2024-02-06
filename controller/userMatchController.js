@@ -174,6 +174,7 @@ const userMatchController = {
         await notification.save();
 
         sendchatNotification(receiverId, {
+          title: "Matrimonial",
           message: `${sender?.name} has sent you an interest`,
         });
 

@@ -7,8 +7,7 @@ const {
 
 async function sendchatNotification(
   userId,
-  messageData,
-  title
+  messageData
   //   chatnotificationCategory
   //   channelId,
   //   senderId
@@ -24,13 +23,12 @@ async function sendchatNotification(
   //     chatTemplatePlaceholder(type, template, messageData, senderId),
   //     getchatsUserType(userId),
   //   ]);
-
   let message = {
     token: userToken.toString(),
     notification: {
       //   title: chatTemplateData[0],
       //   body: chatTemplateData[1],
-      title: title ? title : "Matrimonial",
+      title: messageData.title ? messageData.title : "Matrimonial",
       body: messageData?.message,
     },
   };
