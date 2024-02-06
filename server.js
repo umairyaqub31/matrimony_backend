@@ -34,7 +34,8 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     console.log("data....", data);
     sendchatNotification(data.receiverId, {
-      message: `${data?.author} has sent you an interest`,
+      title: data.author,
+      message: data.message[0].text,
     });
     checkRoom(data);
     socket.to(data.roomId).emit("receive_message", data);
