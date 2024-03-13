@@ -73,6 +73,7 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    membership: { type: mongoose.SchemaTypes.Mixed, default: {} },
     userImages: [String],
     partnerPreference: {
       partnerAge: String,
@@ -104,6 +105,7 @@ const userSchema = new mongoose.Schema(
     sentInterests: [String],
     receivedInterests: [String],
   },
+
   {
     timestamps: true,
   }
