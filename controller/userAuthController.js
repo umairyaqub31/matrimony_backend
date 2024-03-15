@@ -170,6 +170,89 @@ const userAuthController = {
     return res.status(200).json({ user: user, auth: true, token: accessToken });
   },
 
+  async socialLogin(req, res, next) {
+    const userLoginSchema = Joi.object({
+      email: Joi.string().min(5).max(30).required(),
+      // password: Joi.string().required(),
+      fcmToken: Joi.string(),
+    });
+    const { error } = userLoginSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+
+    const { email, fcmToken } = req.body;
+
+    let user;
+
+    try {
+      // match username
+      user = await User.findOne({ email: email });
+
+      if (user == null) {
+        const error = {
+          status: 401,
+          message: "Invalid email",
+        };
+        return next(error);
+      } else {
+        //update fcmToken
+        if (fcmToken && user?.fcmToken !== fcmToken) {
+          Object.keys(user).map((key) => (user["fcmToken"] = fcmToken));
+
+          let update = await user.save();
+        } else {
+          console.log("same Token");
+        }
+      }
+
+      // match password
+
+      // const match = await bcrypt.compare(password, user.password);
+
+      // if (!match) {
+      //   const error = {
+      //     status: 401,
+      //     message: "Invalid Password",
+      //   };
+
+      //   return next(error);
+      // }
+    } catch (error) {
+      return next(error);
+    }
+
+    const accessToken = JWTService.signAccessToken({ _id: user._id }, "365d");
+    const refreshToken = JWTService.signRefreshToken({ _id: user._id }, "365d");
+    // update refresh token in database
+    try {
+      await RefreshToken.updateOne(
+        {
+          userId: user._id,
+        },
+        { token: refreshToken },
+        { upsert: true }
+      );
+    } catch (error) {
+      return next(error);
+    }
+
+    try {
+      await AccessToken.updateOne(
+        {
+          userId: user._id,
+        },
+        { token: accessToken },
+        { upsert: true }
+      );
+    } catch (error) {
+      return next(error);
+    }
+
+    return res.status(200).json({ user: user, auth: true, token: accessToken });
+  },
+
   //.......................................CompleteProfile..................................//
 
   async completeProfile(req, res, next) {
