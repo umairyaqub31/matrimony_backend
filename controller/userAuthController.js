@@ -170,6 +170,46 @@ const userAuthController = {
     return res.status(200).json({ user: user, auth: true, token: accessToken });
   },
 
+  async changePassword(req, res, next) {
+    const userId = req.query.id;
+
+    const userChangePasswordSchema = Joi.object({
+      password: Joi.string().required(),
+      newPassword: Joi.string().required(),
+    });
+    const { error } = userChangePasswordSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+
+    const { password, newPassword } = req.body;
+    console.log(password);
+
+    let user;
+
+    try {
+      user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Invalid current password" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      res.json({ message: "Password changed successfully" });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
+    }
+  },
+
   async socialLogin(req, res, next) {
     const userLoginSchema = Joi.object({
       email: Joi.string().min(5).max(30).required(),
