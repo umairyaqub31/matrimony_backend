@@ -210,6 +210,53 @@ const userAuthController = {
     }
   },
 
+  async deleteAccount(req, res, next) {
+    const userDeleteSchema = Joi.object({
+      email: Joi.string().min(5).max(30).required(),
+      userId: Joi.string().required(),
+    });
+    const { error } = userDeleteSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+
+    const { email, userId } = req.body;
+    let user;
+    try {
+      // match username
+      user = await User.findOne({ email: email });
+
+      if (user == null) {
+        const error = {
+          status: 401,
+          message: "Invalid email",
+        };
+        return next(error);
+      } else {
+        let id = user._id.toString();
+
+        if (id == userId) {
+          User.findByIdAndDelete(userId)
+            .then(() => {
+              res.json({ message: "User deleted successfully" });
+            })
+            .catch((err) => {
+              return res.status(404).json({ message: "User not found" });
+            });
+        } else {
+          const error = {
+            status: 401,
+            message: "Invalid email",
+          };
+          return next(error);
+        }
+      }
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   async socialLogin(req, res, next) {
     const userLoginSchema = Joi.object({
       email: Joi.string().min(5).max(30).required(),

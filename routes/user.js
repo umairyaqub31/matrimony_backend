@@ -23,6 +23,7 @@ const upload = multer({ storage: storage });
 router.post("/user/register", userAuthController.register);
 router.post("/user/login", userAuthController.login);
 router.post("/user/changePassword", userAuthController.changePassword);
+router.post("/user/deleteAccount", userAuthController.deleteAccount);
 router.post("/user/socialLogin", userAuthController.socialLogin);
 router.post(
   "/user/uploadFile",

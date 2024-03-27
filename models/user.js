@@ -104,6 +104,7 @@ const userSchema = new mongoose.Schema(
     },
     sentInterests: [String],
     receivedInterests: [String],
+    friends: [String],
   },
 
   {

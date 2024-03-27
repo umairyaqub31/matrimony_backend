@@ -36,13 +36,21 @@ const userMatchController = {
     let matchedUsers;
     if (matchType == "newUsers") {
       const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 15);
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 365);
 
       // Fetch users with the opposite gender and requests from the last 7 days
+
+      const excludedUserIds = [
+        ...user.sentInterests,
+        ...user.receivedInterests,
+        ...user.friends,
+      ];
       matchedUsers = await User.find({
+        _id: { $nin: excludedUserIds },
         gender: gender, // Opposite gender
         createdAt: { $gte: sevenDaysAgo }, // Requests from the last 7 days
       });
+
       //   console.log(matchedUsers)
 
       // Do something with the matchedUsers, like sending them as a response
@@ -181,6 +189,12 @@ const userMatchController = {
         updatedUser = await User.findOneAndUpdate(
           { _id: senderId },
           { $addToSet: { sentInterests: receiverId } },
+          { new: true } // Return the updated document
+        );
+
+        await User.findOneAndUpdate(
+          { _id: receiverId },
+          { $addToSet: { receivedInterests: senderId } },
           { new: true } // Return the updated document
         );
       }
@@ -322,11 +336,34 @@ const userMatchController = {
         receiverId,
         status: "pending",
       });
+
       const acceptedRequest = new AcceptedRequest({
         senderId: request.senderId,
         receiverId: request.receiverId,
       });
       await acceptedRequest.save();
+
+      //  update user
+
+      await User.findByIdAndUpdate(
+        receiverId,
+        {
+          $pull: { receivedInterests: request.senderId },
+          $push: { friends: request.senderId },
+        },
+        { new: true }
+      );
+
+      await User.findByIdAndUpdate(
+        request.senderId,
+        {
+          $pull: { sentInterests: receiverId },
+          $push: { friends: receiverId },
+        },
+        { new: true }
+      );
+
+      await MatchRequest.findOneAndDelete({ _id: requestId });
 
       return res.status(200).json({
         auth: true,
