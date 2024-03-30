@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema(
     motherTongue: {
       type: String,
     },
+    cast: {
+      type: String,
+    },
+    religion: {
+      type: String,
+    },
     sect: {
       type: String,
     },

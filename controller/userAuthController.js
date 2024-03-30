@@ -18,7 +18,8 @@ const userAuthController = {
       name: Joi.string().required(),
       email: Joi.string().required(),
       phone: Joi.string().required(),
-      password: Joi.string().pattern(passwordPattern).required(),
+      // password: Joi.string().pattern(passwordPattern).required(),
+      password: Joi.string().required(),
       fcmToken: Joi.string(),
     });
 
@@ -354,6 +355,8 @@ const userAuthController = {
         workLocation: Joi.string().required(),
         age: Joi.number().required(),
         maritalStatus: Joi.string().required(),
+        cast: Joi.string().required(),
+        religion: Joi.string().required(),
         height: Joi.number().required(),
         motherTongue: Joi.string().required(),
         sect: Joi.string().required(),
