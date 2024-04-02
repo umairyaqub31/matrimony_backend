@@ -23,6 +23,7 @@ const upload = multer({ storage: storage });
 router.post("/user/register", userAuthController.register);
 router.post("/user/login", userAuthController.login);
 router.post("/user/changePassword", userAuthController.changePassword);
+router.post("/user/forgotPassword", userAuthController.forgotPassword);
 router.post("/user/deleteAccount", userAuthController.deleteAccount);
 router.post("/user/socialLogin", userAuthController.socialLogin);
 router.post(
@@ -39,6 +40,8 @@ router.post("/user/logout", auth, userAuthController.logout);
 //..............verification.....................//
 router.post("/user/sendCodeToEmail", VerificationController.sendCodeToEmail);
 router.post("/user/confirmEmail", VerificationController.confirmEmail);
+router.post("/user/verifyEmail", VerificationController.verifyEmail);
+
 // router.post("/ambulance/ResetLink", VerificationController.ResetLink);
 // router.post("/ambulance/resetPassword", VerificationController.resetPassword);
 

@@ -191,6 +191,55 @@ const verificationController = {
     }
   },
 
+  async verifyEmail(req, res, next) {
+    let emailExists;
+    const { email } = req.body;
+    if (req.originalUrl.includes("/user")) {
+      emailExists = await User.exists({ email });
+    }
+    if (!emailExists) {
+      const error = new Error("User not found!");
+      error.status = 400;
+      return next(error);
+    }
+    try {
+      let code;
+      var codeToSave = new VerificationCode({
+        email: email,
+        code: Math.floor(1000 + Math.random() * 9000),
+      });
+      code = codeToSave.save();
+
+      // Send email (use credintials of SendGrid)
+      var transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "umairyaqub31@gmail.com",
+          pass: "kajhaukzwygsfxau",
+        },
+      });
+      var mailOptions = {
+        from: "no-reply@example.com",
+        to: email,
+        subject: "Account Verification",
+        text:
+          "Your verification code is " + codeToSave.code + "\n\nThank You!\n",
+      };
+      transporter.sendMail(mailOptions, function (err) {
+        if (err) {
+          return next(err);
+        }
+
+        return res.status(200).json({
+          status: true,
+          message: ` A verification email has been sent to ${email}`,
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   async confirmEmail(req, res, next) {
     const { code, email } = req.body;
     VerificationCode.findOne({ code: code }, function (err, cod) {

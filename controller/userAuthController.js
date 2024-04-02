@@ -211,6 +211,46 @@ const userAuthController = {
     }
   },
 
+  async forgotPassword(req, res, next) {
+    // const userId = req.query.id;
+
+    const userChangePasswordSchema = Joi.object({
+      email: Joi.string().required(),
+      password: Joi.string().required(),
+    });
+    const { error } = userChangePasswordSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+
+    const { email, password } = req.body;
+
+    let user;
+
+    try {
+      user = await User.findOne({ email: email });
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // const isMatch = await bcrypt.compare(password, user.password);
+      // if (!isMatch) {
+      //   return res.status(400).json({ message: "Invalid current password" });
+      // }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      res.json({ message: "Password changed successfully" });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
+    }
+  },
+
   async deleteAccount(req, res, next) {
     const userDeleteSchema = Joi.object({
       email: Joi.string().min(5).max(30).required(),
