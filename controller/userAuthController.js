@@ -487,6 +487,39 @@ const userAuthController = {
     });
   },
 
+  async updateActiveStatus(req, res, next) {
+    const userSchema = Joi.object({
+      isActive: Joi.boolean(),
+    });
+
+    const { error } = userSchema.validate(req.body);
+
+    if (error) {
+      return next(error);
+    }
+    const { isActive } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      const error = new Error("User not found!");
+      error.status = 404;
+      return next(error);
+    }
+
+    // Update only the provided fields
+    user.isActive = isActive;
+
+    // Save the updated test
+    await user.save();
+
+    return res.status(200).json({
+      message: "User updated successfully",
+      user: user,
+    });
+  },
+
   //.......................................Logout..................................//
 
   async logout(req, res, next) {

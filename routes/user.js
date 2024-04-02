@@ -34,6 +34,11 @@ router.post(
 // router.post("/user/completeSignup", userAuthController.completeSignup);
 router.put("/user/completeProfile", userAuthController.completeProfile);
 router.put("/user/updateProfile", auth, userAuthController.updateProfile);
+router.put(
+  "/user/updateActiveStatus",
+  auth,
+  userAuthController.updateActiveStatus
+);
 router.post("/user/logout", auth, userAuthController.logout);
 // router.post("/user/refresh", auth, ambulanceAuthController.refresh);
 
